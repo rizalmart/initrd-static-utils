@@ -1,0 +1,221 @@
+name: Static Musl Utilities Build
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: debian:sid
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install build dependencies
+      run: |
+        apt update
+        apt install -y \
+          musl musl-tools musl-dev \
+          build-essential pkg-config \
+          autoconf automake libtool \
+          gettext bison flex \
+          libz-dev zlib1g-dev \
+          liblzma-dev libgcrypt-dev libgpg-error-dev \
+          libblkid-dev libuuid-dev \
+          git wget curl xz-utils
+
+    - name: Prepare workspace
+      run: mkdir -p build static-bin
+
+    ###########################################
+    # BUSYBOX
+    ###########################################
+    - name: Build busybox (static)
+      run: |
+        cd build
+        git clone https://busybox.net/git/busybox.git
+        cd busybox
+        make defconfig
+        # Enable static
+        sed -i 's/.*CONFIG_STATIC.*/CONFIG_STATIC=y/' .config
+        make -j$(nproc)
+        cp busybox ../../static-bin/
+        strip ../../static-bin/busybox
+
+    ###########################################
+    # DIALOG
+    ###########################################
+    - name: Build dialog (static)
+      run: |
+        cd build
+        wget https://invisible-mirror.net/archives/dialog/dialog-1.3-20240101.tgz
+        tar xf dialog-*.tgz
+        cd dialog-*
+        ./configure LDFLAGS="-static" --enable-static --disable-shared
+        make -j$(nproc)
+        cp dialog ../../static-bin/
+        strip ../../static-bin/dialog
+
+    ###########################################
+    # BTRFS-PROGS
+    ###########################################
+    - name: Build btrfs-progs (static)
+      run: |
+        cd build
+        git clone https://github.com/kdave/btrfs-progs.git
+        cd btrfs-progs
+        ./autogen.sh
+        ./configure --disable-shared LDFLAGS="-static"
+        make -j$(nproc)
+        cp btrfs ../../static-bin/
+        strip ../../static-bin/btrfs || true
+
+    ###########################################
+    # CRYPTSETUP (LUKS1)
+    ###########################################
+    - name: Build cryptsetup (static)
+      run: |
+        cd build
+        git clone https://gitlab.com/cryptsetup/cryptsetup.git
+        cd cryptsetup
+        ./autogen.sh
+        ./configure --enable-static --disable-shared LDFLAGS="-static" --with-crypto_backend=kernel
+        make -j$(nproc)
+        cp src/cryptsetup ../../static-bin/
+        strip ../../static-bin/cryptsetup || true
+
+    ###########################################
+    # ADVCP (advcpmv patched cp/mv)
+    ###########################################
+    - name: Build advcp
+      run: |
+        cd build
+        git clone https://github.com/jarun/advcpmv.git
+        cd advcpmv
+        make static
+        cp advcp advmv ../../static-bin/ || true
+        strip ../../static-bin/adv*
+
+    ###########################################
+    # EXT2/EXT4 PROGS (e2fsprogs)
+    ###########################################
+    - name: Build e2fsprogs (resize2fs, find, etc.)
+      run: |
+        cd build
+        git clone https://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git
+        cd e2fsprogs
+        ./configure --enable-static --disable-shared LDFLAGS="-static"
+        make -j$(nproc)
+        cp resize/resize2fs ../../static-bin/
+        cp misc/findsuper ../../static-bin/find || true
+        strip ../../static-bin/* || true
+
+    ###########################################
+    # GREP
+    ###########################################
+    - name: Build grep (static)
+      run: |
+        cd build
+        wget https://ftp.gnu.org/gnu/grep/grep-3.11.tar.xz
+        tar xf grep-*.tar.xz
+        cd grep-*
+        ./configure LDFLAGS="-static" --enable-static --disable-shared
+        make -j$(nproc)
+        cp src/grep ../../static-bin/
+        strip ../../static-bin/grep
+
+    ###########################################
+    # MP EDITOR
+    ###########################################
+    - name: Build mp editor (static)
+      run: |
+        cd build
+        git clone https://github.com/hobbes1069/mp.git
+        cd mp
+        ./configure LDFLAGS="-static" --enable-static --disable-shared
+        make -j$(nproc)
+        cp mp ../../static-bin/
+        strip ../../static-bin/mp
+
+    ###########################################
+    # NANO
+    ###########################################
+    - name: Build nano (static)
+      run: |
+        cd build
+        wget https://www.nano-editor.org/dist/v7/nano-7.2.tar.xz
+        tar xf nano-*.tar.xz
+        cd nano-*
+        ./configure --enable-static --disable-shared LDFLAGS="-static"
+        make -j$(nproc)
+        cp src/nano ../../static-bin/
+        strip ../../static-bin/nano
+
+    ###########################################
+    # PICO (from Alpine 'pico' clone)
+    ###########################################
+    - name: Build pico (static)
+      run: |
+        cd build
+        git clone https://github.com/haikarainen/pico.git
+        cd pico
+        make static
+        cp pico ../../static-bin/ || true
+        strip ../../static-bin/pico || true
+
+    ###########################################
+    # VERCMP (Woof-CE)
+    ###########################################
+    - name: Build vercmp (static)
+      run: |
+        cd build
+        git clone https://github.com/puppylinux-woof-CE/woof-CE.git
+        cd woof-CE/woof-code
+        cc -static vercmp.c -o vercmp
+        cp vercmp ../../../static-bin/
+        strip ../../../static-bin/vercmp || true
+
+    ###########################################
+    # ED EDITOR
+    ###########################################
+    - name: Build ed (static)
+      run: |
+        cd build
+        wget https://ftp.gnu.org/gnu/ed/ed-1.20.tar.lz
+        tar xf ed-1.20.tar.lz
+        cd ed-*
+        ./configure LDFLAGS="-static" --enable-static --disable-shared
+        make -j$(nproc)
+        cp ed ../../static-bin/
+        strip ../../static-bin/ed
+
+    ###########################################
+    # NTFS PROGS (static ntfs-3g tools)
+    ###########################################
+    - name: Build ntfsprogs (static)
+      run: |
+        cd build
+        git clone https://github.com/tuxera/ntfs-3g.git
+        cd ntfs-3g
+        ./configure --enable-static --disable-shared LDFLAGS="-static"
+        make -j$(nproc)
+        cp ntfsprogs/ntfs* ../../static-bin/ || true
+        strip ../../static-bin/ntfs* || true
+
+    ###########################################
+    # CREATE ARTIFACT TAR
+    ###########################################
+    - name: Create tarball
+      run: |
+        cd static-bin
+        tar -cvf ../static-musl-tools.tar .
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: static-musl-tools
+        path: static-musl-tools.tar
