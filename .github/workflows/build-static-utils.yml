@@ -38,7 +38,7 @@ jobs:
     - name: Build busybox (static)
       run: |
         cd build
-        git clone https://busybox.net/git/busybox.git
+        git clone https://git.busybox.net/busybox/busybox.git
         cd busybox
         make defconfig
         # Enable static
