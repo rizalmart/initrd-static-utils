@@ -26,8 +26,9 @@ jobs:
           libz-dev zlib1g-dev \
           liblzma-dev libgcrypt-dev libgpg-error-dev \
           libblkid-dev libuuid-dev \
-          git wget curl xz-utils
-
+          git wget curl xz-utils \
+          libncurses5-dev libncursesw5-dev
+          
     - name: Prepare workspace
       run: mkdir -p build static-bin
 
@@ -49,16 +50,37 @@ jobs:
     ###########################################
     # DIALOG
     ###########################################
+    - name: Build ncurses static-only (minimal)
+      run: |
+          wget https://invisible-island.net/datafiles/release/ncurses.tar.gz
+          tar xf ncurses.tar.gz
+          cd ncurses-*
+          ./configure \
+            --without-debug \
+            --without-manpages \
+            --without-tests \
+            --disable-widec \
+            --enable-static \
+            --disable-shared
+          make -j$(nproc)
+          sudo make install
+    
     - name: Build dialog (static)
       run: |
-        cd build
-        wget https://invisible-mirror.net/archives/dialog/dialog-1.3-20240101.tgz
-        tar xf dialog-*.tgz
-        cd dialog-*
-        ./configure LDFLAGS="-static" --enable-static --disable-shared
-        make -j$(nproc)
-        cp dialog ../../static-bin/
-        strip ../../static-bin/dialog
+        wget https://invisible-island.net/datafiles/release/dialog.tar.gz
+          tar xf dialog.tar.gz
+          cd dialog-*
+          ./configure \
+            --enable-static \
+            --disable-shared \
+            CFLAGS="-Os -fdata-sections -ffunction-sections" \
+            LDFLAGS="-static -s" \
+            LIBS="-lncurses"
+          make -j$(nproc)
+
+          mkdir -p output
+          cp dialog output/dialog_glibc_static
+          strip --strip-unneeded output/dialog_glibc_static || true
 
     ###########################################
     # BTRFS-PROGS
