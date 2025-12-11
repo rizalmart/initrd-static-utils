@@ -32,20 +32,7 @@ jobs:
     - name: Prepare workspace
       run: mkdir -p build static-bin
 
-    ###########################################
-    # BUSYBOX
-    ###########################################
-    - name: Build busybox (static)
-      run: |
-        cd build
-        git clone https://git.busybox.net/busybox/
-        cd busybox
-        make defconfig
-        # Enable static
-        sed -i 's/.*CONFIG_STATIC.*/CONFIG_STATIC=y/' .config
-        make -j$(nproc)
-        cp busybox ../../static-bin/
-        strip ../../static-bin/busybox
+
 
     ###########################################
     # DIALOG
