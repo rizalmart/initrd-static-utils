@@ -25,7 +25,7 @@ jobs:
           gettext bison flex \
           libz-dev zlib1g-dev \
           liblzma-dev libgcrypt-dev libgpg-error-dev \
-          libblkid-dev libuuid-dev \
+          libblkid-dev \
           git wget curl xz-utils \
           libncurses5-dev libncursesw5-dev
           
