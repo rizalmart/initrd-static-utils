@@ -113,8 +113,8 @@ jobs:
         tar xf coreutils-9.5.tar.xz
         cd coreutils-9.5
 
-        aclocal -I m4
-        autoreconf -i
+        #aclocal -I m4
+        #autoreconf -i
         
         # Download and apply advcpmv patch
         curl -fsSL -o ../advcpmv.patch https://raw.githubusercontent.com/jarun/advcpmv/refs/heads/master/advcpmv-0.9-9.5.patch
