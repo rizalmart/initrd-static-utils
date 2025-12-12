@@ -109,8 +109,10 @@ jobs:
         cd build
     
         # Clone coreutils 9.5
-        git clone --branch v9.5 https://git.savannah.gnu.org/git/coreutils.git
-        cd coreutils
+        curl -LO https://ftp.gnu.org/gnu/coreutils/coreutils-9.5.tar.xz
+        tar xf coreutils-9.5.tar.xz
+        cd coreutils-9.5
+
         aclocal -I m4
         autoreconf -i
         
@@ -119,13 +121,11 @@ jobs:
         patch -p1 < ../advcpmv.patch
 
         # Build statically only cp and mv
-        mkdir -p build-static
-        cd build-static
-        ../src/configure CFLAGS="-static" --without-selinux
-        make -C ../src cp mv
+        ./src/configure CFLAGS="-static" --without-selinux
+        make -C ./src cp mv
     
         # Copy and strip binaries
-        cp ../src/cp ../src/mv ../../static-bin/
+        cp ./src/cp ./src/mv ../../static-bin/
         strip --strip-unneeded ../../static-bin/cp ../../static-bin/mv
 
 
