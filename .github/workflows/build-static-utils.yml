@@ -114,7 +114,7 @@ jobs:
     
         # Download and apply advcpmv patch
         curl -fsSL -o ../advcpmv.patch https://raw.githubusercontent.com/jarun/advcpmv/refs/heads/master/advcpmv-0.9-9.5.patch
-        git apply ../advcpmv.patch
+        patch -p1 < ../advcpmv.patch
     
         # Build statically only cp and mv
         mkdir -p build-static
