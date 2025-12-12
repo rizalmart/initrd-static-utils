@@ -103,14 +103,29 @@ jobs:
     ###########################################
     # ADVCP (advcpmv patched cp/mv)
     ###########################################
-    - name: Build advcp
-      run: |
+    - name: Build advcp and advmv
+    run: |
+
         cd build
-        git clone https://github.com/jarun/advcpmv.git
-        cd advcpmv
-        make static
-        cp advcp advmv ../../static-bin/ || true
-        strip ../../static-bin/adv*
+    
+        # Clone coreutils 9.5
+        git clone --branch v9.5 https://git.savannah.gnu.org/git/coreutils.git
+        cd coreutils
+    
+        # Download and apply advcpmv patch
+        curl -fsSL -o ../advcpmv.patch https://raw.githubusercontent.com/jarun/advcpmv/refs/heads/master/advcpmv-0.9-9.5.patch
+        git apply ../advcpmv.patch
+    
+        # Build statically only cp and mv
+        mkdir -p build-static
+        cd build-static
+        ../src/configure CFLAGS="-static" --without-selinux
+        make -C ../src cp mv
+    
+        # Copy and strip binaries
+        cp ../src/cp ../src/mv ../../static-bin/
+        strip --strip-unneeded ../../static-bin/cp ../../static-bin/mv
+
 
     ###########################################
     # EXT2/EXT4 PROGS (e2fsprogs)
