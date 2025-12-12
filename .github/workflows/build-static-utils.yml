@@ -26,7 +26,7 @@ jobs:
           libz-dev zlib1g-dev \
           liblzma-dev libgcrypt-dev libgpg-error-dev \
           libblkid-dev \
-          git wget curl xz-utils zstd libzstd-dev \
+          git wget curl xz-utils zstd libzstd-dev liblzo2-dev \
           libncurses5-dev libncursesw5-dev sudo libext2fs-dev 
           
     - name: Prepare workspace
