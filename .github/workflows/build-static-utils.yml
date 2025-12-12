@@ -28,7 +28,7 @@ jobs:
           libblkid-dev libudev-dev udev \
           git wget curl xz-utils zstd libzstd-dev liblzo2-dev \
           libncurses5-dev libncursesw5-dev sudo libext2fs-dev \
-          systemd-dev
+          systemd-dev autopoint
           
           
     - name: Prepare workspace
@@ -139,19 +139,6 @@ jobs:
         strip ../../static-bin/grep
 
     ###########################################
-    # MP EDITOR
-    ###########################################
-    - name: Build mp editor (static)
-      run: |
-        cd build
-        git clone https://github.com/hobbes1069/mp.git
-        cd mp
-        ./configure LDFLAGS="-static" --enable-static --disable-shared
-        make -j$(nproc)
-        cp mp ../../static-bin/
-        strip ../../static-bin/mp
-
-    ###########################################
     # NANO
     ###########################################
     - name: Build nano (static)
@@ -166,18 +153,6 @@ jobs:
         strip ../../static-bin/nano
 
     ###########################################
-    # PICO (from Alpine 'pico' clone)
-    ###########################################
-    - name: Build pico (static)
-      run: |
-        cd build
-        git clone https://github.com/haikarainen/pico.git
-        cd pico
-        make static
-        cp pico ../../static-bin/ || true
-        strip ../../static-bin/pico || true
-
-    ###########################################
     # VERCMP (Woof-CE)
     ###########################################
     - name: Build vercmp (static)
@@ -188,20 +163,6 @@ jobs:
         cc -static vercmp.c -o vercmp
         cp vercmp ../../../static-bin/
         strip ../../../static-bin/vercmp || true
-
-    ###########################################
-    # ED EDITOR
-    ###########################################
-    - name: Build ed (static)
-      run: |
-        cd build
-        wget https://ftp.gnu.org/gnu/ed/ed-1.20.tar.lz
-        tar xf ed-1.20.tar.lz
-        cd ed-*
-        ./configure LDFLAGS="-static" --enable-static --disable-shared
-        make -j$(nproc)
-        cp ed ../../static-bin/
-        strip ../../static-bin/ed
 
     ###########################################
     # NTFS PROGS (static ntfs-3g tools)
