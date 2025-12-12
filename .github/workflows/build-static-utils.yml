@@ -93,7 +93,8 @@ jobs:
         git clone https://gitlab.com/cryptsetup/cryptsetup.git
         cd cryptsetup
         ./autogen.sh
-        ./configure --enable-static --disable-shared LDFLAGS="-static" --with-crypto_backend=kernel
+        ./configure --enable-static --disable-shared LDFLAGS="-static" --with-crypto_backend=kernel \
+        --disable-asciidoc --disable-ssh-token
         make -j$(nproc)
         cp src/cryptsetup ../../static-bin/
         strip ../../static-bin/cryptsetup || true
