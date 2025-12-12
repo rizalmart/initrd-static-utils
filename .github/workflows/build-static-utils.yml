@@ -48,6 +48,7 @@ jobs:
             --without-tests \
             --disable-widec \
             --enable-static \
+            --without-cxx-binding \
             --disable-shared
           make -j$(nproc)
           sudo make install
