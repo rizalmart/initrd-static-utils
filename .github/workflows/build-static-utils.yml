@@ -79,7 +79,7 @@ jobs:
         git clone https://github.com/kdave/btrfs-progs.git
         cd btrfs-progs
         ./autogen.sh
-        ./configure --disable-shared --disable-documentation LDFLAGS="-static" --disable-udev
+        ./configure --disable-shared --disable-documentation LDFLAGS="-static" --disable-libudev
         make -j$(nproc)
         cp btrfs ../../static-bin/
         strip ../../static-bin/btrfs || true
