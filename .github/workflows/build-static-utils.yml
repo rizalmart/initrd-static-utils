@@ -97,7 +97,7 @@ jobs:
         ./configure --enable-static --disable-shared LDFLAGS="-static" --with-crypto_backend=kernel \
         --disable-asciidoc --disable-ssh-token
         make -j$(nproc)
-        cp src/cryptsetup ../../static-bin/
+        cp ./cryptsetup ../../static-bin/
         strip ../../static-bin/cryptsetup || true
 
     ###########################################
