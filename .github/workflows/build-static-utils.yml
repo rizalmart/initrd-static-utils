@@ -27,12 +27,10 @@ jobs:
           liblzma-dev libgcrypt-dev libgpg-error-dev \
           libblkid-dev \
           git wget curl xz-utils \
-          libncurses5-dev libncursesw5-dev
+          libncurses5-dev libncursesw5-dev sudo
           
     - name: Prepare workspace
       run: mkdir -p build static-bin
-
-
 
     ###########################################
     # DIALOG
