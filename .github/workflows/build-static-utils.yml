@@ -111,6 +111,7 @@ jobs:
         # Clone coreutils 9.5
         git clone --branch v9.5 https://git.savannah.gnu.org/git/coreutils.git
         cd coreutils
+        aclocal -I m4
         autoreconf -i
         
         # Download and apply advcpmv patch
