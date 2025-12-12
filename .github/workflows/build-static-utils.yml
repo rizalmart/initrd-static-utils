@@ -27,7 +27,7 @@ jobs:
           liblzma-dev libgcrypt-dev libgpg-error-dev \
           libblkid-dev \
           git wget curl xz-utils \
-          libncurses5-dev libncursesw5-dev sudo
+          libncurses5-dev libncursesw5-dev sudo e2fsprogs
           
     - name: Prepare workspace
       run: mkdir -p build static-bin
