@@ -31,7 +31,7 @@ jobs:
           systemd-dev autopoint libdevmapper-dev libpopt-dev \
           libsepol-dev libjson-c-dev liblvm2-dev bzip2 perl \
           linux-libc-dev libncurses-dev libgpg-error-dev \
-          uuid-dev libselinux-dev libgcrypt20-dev
+          uuid-dev libselinux-dev libgcrypt20-dev libaio-dev
 
     - name: Setup Musl Header Links
       run: |
