@@ -133,7 +133,7 @@ jobs:
     - name: Build e2fsprogs (resize2fs, find, etc.)
       run: |
         cd build
-        git clone https://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git
+        git clone https://kernel.googlesource.com/pub/scm/fs/ext2/e2fsprogs
         cd e2fsprogs
         ./configure --enable-static --disable-shared LDFLAGS="-static"
         make -j$(nproc)
