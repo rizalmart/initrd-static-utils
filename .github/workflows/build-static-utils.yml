@@ -81,7 +81,7 @@ jobs:
           ./configure \
             --enable-static \
             --disable-shared \
-            CFLAGS="-O2 -static -I/usr/local/musl/include/ncursesw" \
+            CFLAGS="-O2 -I/usr/local/musl/include/ncursesw" \
             LDFLAGS="-static -L/usr/local/musl/lib" \
             LIBS="-lncursesw -ltinfo"
           make -j$(nproc)
