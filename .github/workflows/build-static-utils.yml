@@ -50,8 +50,6 @@ jobs:
           wget https://invisible-island.net/datafiles/release/ncurses.tar.gz
           tar xf ncurses.tar.gz
           cd ncurses-*
-           CC=musl-gcc \
-          CC=musl-gcc \
           ./configure \
             --build=x86_64-pc-linux-gnu \
             --host=x86_64-pc-linux-musl \
@@ -65,7 +63,6 @@ jobs:
             --disable-shared \
             --enable-static \
             --enable-widec \
-            --prefix=/usr/local/musl
 
           make -j$(nproc)
           sudo make install
@@ -76,13 +73,12 @@ jobs:
         wget https://invisible-island.net/datafiles/release/dialog.tar.gz
           tar xf dialog.tar.gz
           cd dialog-*
-          CC=musl-gcc \
           ./configure \
             --enable-static \
             --disable-shared \
             --with-ncursesw=/usr/local/musl \
-            CFLAGS="-O2" \
-            LDFLAGS="-static -L/usr/local/musl/lib" \
+            CFLAGS="-Os -Wall " \
+            LDFLAGS="-static" \
             LIBS="-lncursesw -ltinfo"
           make -j$(nproc)
           strip ./dialog
