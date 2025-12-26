@@ -249,7 +249,7 @@ jobs:
             LDFLAGS="-static -Wl,--gc-sections -Wl,--as-needed"
           
           make -j$(nproc)          
-          cp fsck/fsck ../../static-bin/
+          cp fsck/fsck.f2fs ../../static-bin/
 
             
     ###########################################
