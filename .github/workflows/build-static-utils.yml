@@ -52,7 +52,8 @@ jobs:
           cd ncurses-*
            CC=musl-gcc \
           ./configure \
-            --host=x86_64-linux-musl \
+            --build=x86_64-pc-linux-gnu \
+            --host=x86_64-unknown-linux-musl \
             --without-cxx \
             --without-cxx-binding \          
             --with-termlib \
@@ -96,7 +97,8 @@ jobs:
         cd lzo-2.10
         CC=musl-gcc \
         ./configure \
-        --host=x86_64-linux-musl \
+        --build=x86_64-pc-linux-gnu \
+        --host=x86_64-unknown-linux-musl \
         --enable-static \
         --disable-shared \
         --prefix=/usr/local/musl \
@@ -112,7 +114,8 @@ jobs:
         ./autogen.sh
         CC=musl-gcc \
         ./configure \
-          --host=x86_64-linux-musl \
+          --build=x86_64-pc-linux-gnu \
+          --host=x86_64-unknown-linux-musl \
           --disable-documentation \
           --disable-backtrace \
           --disable-libudev \
