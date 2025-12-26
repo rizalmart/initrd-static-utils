@@ -71,7 +71,7 @@ jobs:
           ./configure \
             --enable-static \
             --disable-shared \
-            CFLAGS="-Os -fdata-sections -ffunction-sections" \
+            CFLAGS="-Os -fdata-sections -ffunction-sections -fno-unwind-tables" \
             LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed" \
             LIBS="-lncurses"
           make -j$(nproc)
@@ -88,8 +88,8 @@ jobs:
         cd btrfs-progs
         ./autogen.sh
         ./configure --disable-shared --disable-documentation --disable-libudev
-        CFLAGS="-Os" \
-        LDFLAGS="-static -s"        
+        CFLAGS="-Os -ffunction-sections -fdata-sections -fno-unwind-tables" \
+        LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed"        
         make -j$(nproc)
         cp btrfs ../../static-bin/
         strip ../../static-bin/btrfs || true
@@ -105,7 +105,8 @@ jobs:
         ./autogen.sh
         ./configure --enable-static --disable-shared --with-crypto_backend=kernel \
         --disable-asciidoc --disable-ssh-token \
-        LDFLAGS="-static"
+        CFLAGS="-Os -ffunction-sections -fdata-section -fno-unwind-tables" \
+        LDFLAGS="-static -Wl,--gc-sections -Wl,--as-needed"
         make -j$(nproc)
         cp ./cryptsetup ../../static-bin/
         strip ../../static-bin/cryptsetup || true
@@ -135,8 +136,8 @@ jobs:
             --with-included-popt \
             --enable-static \
             --disable-shared \            
-          CFLAGS="-static -Os -Wno-error=incompatible-pointer-types" \
-          LDFLAGS="-static"
+          CFLAGS="-static -Os -Wno-error=incompatible-pointer-types -ffunction-sections -fdata-sections -fno-unwind-tables" \
+          LDFLAGS="-static -Wl,--gc-sections -Wl,--as-needed"
         make
         strip ./rsync
         cp ./rsync ../../static-bin/
@@ -181,8 +182,8 @@ jobs:
         tar xf nano-*.tar.xz
         cd nano-*
         ./configure --enable-static --disable-shared --enable-tiny \
-        CFLAGS="-Os -static" \
-        LDFLAGS="-static"
+        CFLAGS="-Os -static -ffunction-sections -fdata-sections" \
+        LDFLAGS="-static -Wl,--gc-sections -Wl,--as-needed"
         
         sed -i 's|.*HAVE_USE_DEFAULT_COLORS.*|#define HAVE_USE_DEFAULT_COLORS 1|' config.h
         sed -i 's|.*GNU_WORDBOUNDS.*|#define GNU_WORDBOUNDS 1|' config.h
@@ -231,39 +232,7 @@ jobs:
           # Prepare for upload
           mkdir -p ../dist
           cp src/mkfs.fat src/fsck.fat src/fatlabel ../../static-bin/
-          
-    - name: Build f2fs-tools statically with musl (single step)
-      run: |
-          cd build
-
-          # fetch source
-          git clone https://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs-tools.git
-          cd f2fs-tools
-          git checkout v1.16.0
-
-          # regenerate autotools (fix config.sub issues)
-          ./autogen.sh || autoreconf -fi
-
-          # configure (static-safe options)
-          ./configure \
-            --host=x86_64-linux-musl \
-            --disable-shared \
-            --enable-static \
-            --without-selinux \
-            --without-blkid \
-            --without-mount \
-            --disable-nls \
-            CFLAGS="-O2 -static -Wno-error=incompatible-pointer-types" \
-            LDFLAGS="-static"
-
-          # build
-          make -j$(nproc)
-
-          # strip binaries
-          strip src/fsck/f2fs_fsck \
-
-          # package result
-          cp src/fsck/f2fs_fsck ../../static-bin/          
+                  
             
     ###########################################
     # CREATE ARTIFACT TAR
