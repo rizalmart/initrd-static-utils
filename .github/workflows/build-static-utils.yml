@@ -192,6 +192,7 @@ jobs:
         --disable-wrapping \
         --enable-tiny \
         --without-slang \
+        --without-ncurses \
         --without-ncursesw \
         CFLAGS="-Os -static" \
         LDFLAGS="-static"
