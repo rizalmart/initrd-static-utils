@@ -86,7 +86,9 @@ jobs:
         git clone https://github.com/kdave/btrfs-progs.git
         cd btrfs-progs
         ./autogen.sh
-        ./configure --disable-shared --disable-documentation LDFLAGS="-static" --disable-libudev
+        ./configure --disable-shared --disable-documentation --disable-libudev
+        CFLAGS="-Os" \
+        LDFLAGS="-static -s" \        
         make -j$(nproc)
         cp btrfs ../../static-bin/
         strip ../../static-bin/btrfs || true
@@ -177,7 +179,6 @@ jobs:
         wget https://www.nano-editor.org/dist/v7/nano-7.2.tar.xz
         tar xf nano-*.tar.xz
         cd nano-*
-        CC=musl-gcc \
         ./configure \
         --host=x86_64-linux-musl \
         --disable-nls \
