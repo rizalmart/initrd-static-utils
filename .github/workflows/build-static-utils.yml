@@ -53,7 +53,7 @@ jobs:
            CC=musl-gcc \
           ./configure \
             --build=x86_64-pc-linux-gnu \
-            --host=x86_64-unknown-linux-musl \
+            --host=x86_64-pc-linux-musl \
             --without-cxx \
             --without-cxx-binding \          
             --with-termlib \
@@ -65,6 +65,7 @@ jobs:
             --enable-static \
             --enable-widec \
             --prefix=/usr/local/musl
+            
           make -j$(nproc)
           sudo make install
     
