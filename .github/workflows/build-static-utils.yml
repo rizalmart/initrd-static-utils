@@ -110,6 +110,7 @@ jobs:
         --enable-static-cryptsetup \
         --disable-udev \
         --disable-selinux \
+        --disable-devmapper \
         --disable-veritysetup \
         --disable-python \
         CFLAGS="-Os -ffunction-sections -fdata-sections -fno-unwind-tables" \
