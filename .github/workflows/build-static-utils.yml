@@ -29,7 +29,7 @@ jobs:
           git wget curl xz-utils zstd libzstd-dev liblzo2-dev \
           libncurses5-dev libncursesw5-dev sudo libext2fs-dev \
           systemd-dev autopoint libdevmapper-dev libpopt-dev \
-          libsepol-dev libjson-c-dev liblvm2-dev
+          libsepol-dev libjson-c-dev liblvm2-dev bzip2 perl
           
           
     - name: Prepare workspace
@@ -124,7 +124,7 @@ jobs:
           CFLAGS="-static -O2 -Wno-error=incompatible-pointer-types" \
           LDFLAGS="-static"
         make
-        strip --unneeded rsync
+        strip rsync
     
         # Copy and strip binaries
         cp ./rsync ../../static-bin/
@@ -182,6 +182,31 @@ jobs:
         cc -static vercmp.c -o vercmp
         cp vercmp ../../../static-bin/
         strip ../../../static-bin/vercmp || true
+
+    - name: Download and Build Static BusyBox
+      run: |
+          VERSION="1.36.1"
+          wget https://busybox.net/downloads/busybox-${VERSION}.tar.bz2
+          tar -xf busybox-${VERSION}.tar.bz2
+          cd busybox-${VERSION}
+
+          # 1. Create default config
+          # We set CROSS_COMPILE to musl-gcc to ensure the whole build uses musl headers
+          make CROSS_COMPILE=musl-gcc defconfig
+
+          # 2. Force static linking in the config file
+          sed -i 's/# CONFIG_STATIC is not set/CONFIG_STATIC=y/' .config
+          
+          # 3. Compile
+          # We explicitly pass the CC and Extra LDFLAGS to ensure no glibc leakage
+          make -j$(nproc) \
+            CC=musl-gcc \
+            LDFLAGS="-static" \
+            CFLAGS="-static"
+
+          # Copy and strip binaries
+          cp ./busybox ../../static-bin/
+            
 
     ###########################################
     # CREATE ARTIFACT TAR
