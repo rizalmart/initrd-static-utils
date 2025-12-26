@@ -104,7 +104,7 @@ jobs:
         cd cryptsetup
         git checkout v1_7_x
         ./autogen.sh
-        ./configure--disable-nls \
+        ./configure --disable-nls \
         --disable-shared \
         --enable-static \
         --enable-static-cryptsetup \
