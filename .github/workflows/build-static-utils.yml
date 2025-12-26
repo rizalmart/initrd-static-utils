@@ -106,7 +106,7 @@ jobs:
         ./configure --enable-static --disable-shared --with-crypto_backend=kernel \
         --disable-asciidoc --disable-ssh-token \
         CFLAGS="-Os -ffunction-sections -fdata-section -fno-unwind-tables" \
-        LDFLAGS="-static -Wl,--gc-sections -Wl,--as-needed"
+        LDFLAGS="-static"
         make -j$(nproc)
         cp ./cryptsetup ../../static-bin/
         strip ../../static-bin/cryptsetup || true
