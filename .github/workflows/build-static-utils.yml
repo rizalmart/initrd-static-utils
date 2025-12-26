@@ -87,7 +87,15 @@ jobs:
         cd btrfs-progs
         ./autogen.sh
         CC=musl-gcc \
-        ./configure --disable-shared --disable-documentation --disable-libudev \
+        ./configure \
+          --host=x86_64-linux-musl \
+          --disable-documentation \
+          --disable-backtrace \
+          --disable-libudev \
+          --disable-systemd \
+          --disable-python \
+          --enable-static \
+          --disable-shared
         CFLAGS="-static -Os -Wno-error=incompatible-pointer-types -Wall" \
         LDFLAGS="-static"
         make -j$(nproc)
