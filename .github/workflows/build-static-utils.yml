@@ -72,7 +72,7 @@ jobs:
             --enable-static \
             --disable-shared \
             CFLAGS="-Os -fdata-sections -ffunction-sections" \
-            LDFLAGS="-static -s" \
+            LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed" \
             LIBS="-lncurses"
           make -j$(nproc)
           strip ./dialog
@@ -253,7 +253,7 @@ jobs:
             --without-blkid \
             --without-mount \
             --disable-nls \
-            CFLAGS="-O2 -static" \
+            CFLAGS="-O2 -static -Wno-error=incompatible-pointer-types" \
             LDFLAGS="-static"
 
           # build
