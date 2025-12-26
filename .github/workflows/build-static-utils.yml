@@ -94,7 +94,7 @@ jobs:
         cp btrfs ../../static-bin/
         strip ../../static-bin/btrfs || true
 
-    ###########################################
+###########################################
     # CRYPTSETUP (LUKS1)
     ###########################################
     - name: Build cryptsetup (static)
@@ -105,11 +105,12 @@ jobs:
         ./autogen.sh
         ./configure --enable-static --disable-shared --with-crypto_backend=kernel \
         --disable-asciidoc --disable-ssh-token \
-        CFLAGS="-Os -ffunction-sections -fdata-section -fno-unwind-tables" \
-        LDFLAGS="-static"
+        CFLAGS="-Os -ffunction-sections -fdata-sections -fno-unwind-tables" \
+        LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed"
+        
         make -j$(nproc)
         cp ./cryptsetup ../../static-bin/
-        strip ../../static-bin/cryptsetup || true
+        strip ../../static-bin/cryptsetup
 
     - name: Build minimal rsync
       run: |
