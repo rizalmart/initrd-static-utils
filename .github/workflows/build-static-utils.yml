@@ -100,34 +100,26 @@ jobs:
         cp ./cryptsetup ../../static-bin/
         strip ../../static-bin/cryptsetup || true
 
-    ###########################################
-    # ADVCP (advcpmv patched cp/mv)
-    ###########################################
-    - name: Build advcp and advmv
+    - name: Clone, configure, and build minimal rsync
       run: |
-
-        cd build
-    
-        # Clone coreutils 9.5
-        curl -LO https://ftp.gnu.org/gnu/coreutils/coreutils-9.5.tar.xz
-        tar xf coreutils-9.5.tar.xz
-        cd coreutils-9.5
-
-        #aclocal -I m4
-        #autoreconf -i
-        
-        # Download and apply advcpmv patch
-        curl -fsSL -o ../advcpmv.patch https://raw.githubusercontent.com/jarun/advcpmv/refs/heads/master/advcpmv-0.9-9.5.patch
-        patch -p1 < ../advcpmv.patch
-
-        # Build statically only cp and mv
-        ./src/configure CFLAGS="-static" --without-selinux
-        make -C ./src cp mv
+        git clone https://github.com/WayneD/rsync.git
+        cd rsync
+        git checkout v3.3.0
+        ./configure \
+          --prefix=/usr \
+          --disable-acl \
+          --disable-xattr \
+          --disable-iconv \
+          --disable-lz4 \
+          --disable-zstd \
+          --disable-openssl \
+          --enable-included-popt \
+          CFLAGS="-Os"
+        make
+        strip --unneeded rsync
     
         # Copy and strip binaries
-        cp ./src/cp ./src/mv ../../static-bin/
-        strip --strip-unneeded ../../static-bin/cp ../../static-bin/mv
-
+        cp ./rsync ../../static-bin/
 
     ###########################################
     # EXT2/EXT4 PROGS (e2fsprogs)
