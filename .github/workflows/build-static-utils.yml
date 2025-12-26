@@ -102,7 +102,7 @@ jobs:
         cd build
         git clone https://gitlab.com/cryptsetup/cryptsetup.git
         cd cryptsetup
-        git checkout v1.7.5
+        git checkout v1_7_x
         ./autogen.sh
         ./configure --enable-static --disable-shared --with-crypto_backend=kernel \
         --disable-asciidoc --disable-ssh-token \
