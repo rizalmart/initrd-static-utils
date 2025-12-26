@@ -104,8 +104,14 @@ jobs:
         cd cryptsetup
         git checkout v1_7_x
         ./autogen.sh
-        ./configure --enable-static --disable-shared --with-crypto_backend=kernel \
-        --disable-asciidoc --disable-ssh-token \
+        ./configure--disable-nls \
+        --disable-shared \
+        --enable-static \
+        --enable-static-cryptsetup \
+        --disable-udev \
+        --disable-selinux \
+        --disable-veritysetup \
+        --disable-python \
         CFLAGS="-Os -ffunction-sections -fdata-sections -fno-unwind-tables" \
         LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed"
         
@@ -118,12 +124,12 @@ jobs:
         cd build
         git clone https://github.com/WayneD/rsync.git
         cd rsync        
-        git checkout v3.4.1
+        git checkout v3.3.0
 
         CC=musl-gcc \
         ./configure \
             --build=x86_64-pc-linux-gnu \
-            --host=x86_64-unknown-linux-musl \
+            --host=x86_64-pc-linux-musl \
             --disable-ipv6 \
             --disable-openssl \
             --disable-xxhash \
