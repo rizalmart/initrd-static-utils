@@ -56,6 +56,7 @@ jobs:
     
     - name: Build dialog (static)
       run: |
+        cd build 
         wget https://invisible-island.net/datafiles/release/dialog.tar.gz
           tar xf dialog.tar.gz
           cd dialog-*
@@ -66,10 +67,8 @@ jobs:
             LDFLAGS="-static -s" \
             LIBS="-lncurses"
           make -j$(nproc)
-
-          mkdir -p output
-          cp dialog output/dialog_glibc_static
-          strip --strip-unneeded output/dialog_glibc_static || true
+          strip ./dialog
+          cp dialog ../../static-bin/
 
     ###########################################
     # BTRFS-PROGS
@@ -102,6 +101,7 @@ jobs:
 
     - name: Build minimal rsync
       run: |
+        cd build
         git clone https://github.com/WayneD/rsync.git
         cd rsync        
         git checkout v3.4.1
@@ -124,9 +124,7 @@ jobs:
           CFLAGS="-static -O2 -Wno-error=incompatible-pointer-types" \
           LDFLAGS="-static"
         make
-        strip rsync
-    
-        # Copy and strip binaries
+        strip ./rsync
         cp ./rsync ../../static-bin/
 
     ###########################################
@@ -185,6 +183,7 @@ jobs:
 
     - name: Download and Build Static BusyBox
       run: |
+          cd build
           VERSION="1.36.1"
           wget https://busybox.net/downloads/busybox-${VERSION}.tar.bz2
           tar -xf busybox-${VERSION}.tar.bz2
