@@ -216,39 +216,7 @@ jobs:
           # Prepare for upload
           mkdir -p ../dist
           cp src/mkfs.fat src/fsck.fat src/fatlabel ../../static-bin/       
-
-    - name: Build Static BusyBox
-      run: |
-
-          # This bridges the gap between Musl and the Linux Kernel headers on Debian
-          # It fixes the "linux/errno.h" and "linux/kd.h" missing errors
-          sudo ln -s /usr/include/x86_64-linux-gnu/asm /usr/include/x86_64-linux-musl/asm
-          sudo ln -s /usr/include/linux /usr/include/x86_64-linux-musl/linux
-          sudo ln -s /usr/include/asm-generic /usr/include/x86_64-linux-musl/asm-generic
-      
-          cd build
-          VERSION="1.36.1"
-          git clone --depth 1 https://github.com/mirror/busybox.git
-          cd busybox
-          
-          # 1. Create default config
-          # We set CROSS_COMPILE to musl-gcc to ensure the whole build uses musl headers
-          make CROSS_COMPILE=gcc defconfig
-
-          # 2. Force static linking in the config file
-          sed -i 's/# CONFIG_STATIC is not set/CONFIG_STATIC=y/' .config
-          
-          # 3. Compile
-          # We explicitly pass the CC and Extra LDFLAGS to ensure no glibc leakage
-          make -j$(nproc) \
-            CC=gcc \
-            LDFLAGS="-static" \
-            CFLAGS="-Os -static -Wall"
-
-          # Copy and strip binaries
-          cp ./busybox ../../static-bin/
             
-
     ###########################################
     # CREATE ARTIFACT TAR
     ###########################################
