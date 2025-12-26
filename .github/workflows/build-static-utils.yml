@@ -192,8 +192,7 @@ jobs:
         --without-slang \
         --without-ncursesw \
         CFLAGS="-Os -static" \
-        LDFLAGS="-static" \
-        LIBS="-lz" \
+        LDFLAGS="-static"
         make -j$(nproc)
         cp src/nano ../../static-bin/
         strip ../../static-bin/nano
