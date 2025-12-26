@@ -100,11 +100,12 @@ jobs:
         cp ./cryptsetup ../../static-bin/
         strip ../../static-bin/cryptsetup || true
 
-    - name: Clone, configure, and build minimal rsync
+    - name: Build minimal rsync
       run: |
         git clone https://github.com/WayneD/rsync.git
         cd rsync
-        git checkout v3.3.0
+        git checkout v3.4.1
+        CC=musl-gcc \
         ./configure \
           --prefix=/usr \
           --disable-acl \
@@ -114,7 +115,10 @@ jobs:
           --disable-zstd \
           --disable-openssl \
           --enable-included-popt \
-          CFLAGS="-Os"
+          --disable-md2man \
+          --disable-xxhash \          
+          CFLAGS="-Os" \
+          LDFLAGS="-static"
         make
         strip --unneeded rsync
     
