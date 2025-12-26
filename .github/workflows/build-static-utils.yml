@@ -1,4 +1,4 @@
-name: Static Musl Utilities Build
+name: Static Utilities Build
 
 on:
   workflow_dispatch:
@@ -108,16 +108,20 @@ jobs:
         
         CC=musl-gcc \
         ./configure \
-          --prefix=/usr \
-          --disable-acl \
-          --disable-xattr \
-          --disable-iconv \
-          --disable-lz4 \
-          --disable-zstd \
-          --disable-openssl \
-          --enable-included-popt \
-          --disable-md2man \
-          --disable-xxhash \          
+            --build=x86_64-pc-linux-gnu \
+            --host=x86_64-unknown-linux-musl \
+            --disable-ipv6 \
+            --disable-openssl \
+            --disable-xxhash \
+            --disable-zstd \
+            --disable-lz4 \
+            --disable-simd \
+            --disable-md2man \
+            --disable-iconv-open \
+            --disable-acl-support \
+            --disable-xattr-support \
+            --with-included-zlib \
+            --with-included-popt \         
           CFLAGS="-Os" \
           LDFLAGS="-static"
         make
