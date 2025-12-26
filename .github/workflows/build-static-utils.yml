@@ -104,9 +104,8 @@ jobs:
       run: |
         git clone https://github.com/WayneD/rsync.git
         cd rsync        
-        git checkout v3.3.0
+        git checkout v3.4.1
         
-        CC=musl-gcc \
         ./configure \
             --build=x86_64-pc-linux-gnu \
             --host=x86_64-unknown-linux-musl \
