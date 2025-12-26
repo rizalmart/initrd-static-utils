@@ -59,7 +59,7 @@ jobs:
             --without-tests \
             --disable-shared \
             --enable-static \
-            --enable-widec \
+            --enable-widec
           make -j$(nproc)
           sudo make install
     
@@ -96,8 +96,9 @@ jobs:
         --enable-static \
         --disable-shared \
         --prefix=/usr/local/musl \
-        CFLAGS="-O2 -static" 
-        LDFLAGS="-static"
+        CFLAGS="-O2 -static" \ 
+        LDFLAGS="-static" \
+        LIBS="-luuid -lblkid -llzo2 -lzstd -llz4 -lz -lpthread"
         make -j$(nproc)
         make install        
         cd ..
