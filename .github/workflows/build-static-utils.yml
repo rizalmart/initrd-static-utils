@@ -112,8 +112,8 @@ jobs:
           --disable-python \
           --enable-static \
           --disable-shared
-        CFLAGS="-static -Os -Wno-error=incompatible-pointer-types -Wall" \
-        LDFLAGS="-static"
+        CFLAGS="-static -Os -Wno-error=incompatible-pointer-types -Wall -I/usr/local/musl/include" \
+        LDFLAGS="-static -L/usr/local/musl/lib"
         make -j$(nproc)
         cp btrfs ../../static-bin/
         strip ../../static-bin/btrfs || true
