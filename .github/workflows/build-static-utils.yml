@@ -242,9 +242,9 @@ jobs:
           # 3. Compile
           # We explicitly pass the CC and Extra LDFLAGS to ensure no glibc leakage
           make -j$(nproc) \
-            CC=musl-gcc \
+            CC=gcc \
             LDFLAGS="-static" \
-            CFLAGS="-static"
+            CFLAGS="-Os -static -Wall"
 
           # Copy and strip binaries
           cp ./busybox ../../static-bin/
