@@ -50,8 +50,11 @@ jobs:
           wget https://invisible-island.net/datafiles/release/ncurses.tar.gz
           tar xf ncurses.tar.gz
           cd ncurses-*
+           CC=musl-gcc \
           ./configure \
             --host=x86_64-linux-musl \
+            --without-cxx \
+            --without-cxx-binding \          
             --with-termlib \
             --with-ticlib \
             --without-debug \
@@ -59,7 +62,8 @@ jobs:
             --without-tests \
             --disable-shared \
             --enable-static \
-            --enable-widec
+            --enable-widec \
+            --prefix=/usr/local/musl
           make -j$(nproc)
           sudo make install
     
@@ -73,8 +77,8 @@ jobs:
           ./configure \
             --enable-static \
             --disable-shared \
-            CFLAGS="-Os -fdata-sections -ffunction-sections -Wall" \
-            LDFLAGS="-static -s" \
+            CFLAGS="-O2 -static -I/usr/local/musl/include/ncursesw" \
+            LDFLAGS="-static -L/usr/local/musl/lib" \
             LIBS="-lncursesw -ltinfo"
           make -j$(nproc)
           strip ./dialog
