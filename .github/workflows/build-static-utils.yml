@@ -192,11 +192,14 @@ jobs:
         --disable-speller \
         --disable-wrapping \
         --enable-tiny \
-        --without-slang \
-        --without-ncurses \
-        --without-ncursesw \
+        --enable-color \
+        --enable-nanorc
         CFLAGS="-Os -static" \
         LDFLAGS="-static"
+        
+        sed -i 's|.*HAVE_USE_DEFAULT_COLORS.*|#define HAVE_USE_DEFAULT_COLORS 1|' config.h
+        sed -i 's|.*GNU_WORDBOUNDS.*|#define GNU_WORDBOUNDS 1|' config.h
+        
         make -j$(nproc)
         cp src/nano ../../static-bin/
         strip ../../static-bin/nano
@@ -240,7 +243,45 @@ jobs:
 
           # Prepare for upload
           mkdir -p ../dist
-          cp src/mkfs.fat src/fsck.fat src/fatlabel ../../static-bin/       
+          cp src/mkfs.fat src/fsck.fat src/fatlabel ../../static-bin/
+          
+    - name: Build f2fs-tools statically with musl (single step)
+      run: |
+          cd build
+
+          # fetch source
+          git clone https://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs-tools.git
+          cd f2fs-tools
+          git checkout v1.16.0
+
+          # regenerate autotools (fix config.sub issues)
+          ./autogen.sh || autoreconf -fi
+
+          # musl static build environment
+          export CC=musl-gcc
+          export CFLAGS="-O2 -static"
+          export LDFLAGS="-static"
+          export PKG_CONFIG=pkg-config
+          export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/share/pkgconfig
+
+          # configure (static-safe options)
+          ./configure \
+            --host=x86_64-linux-musl \
+            --disable-shared \
+            --enable-static \
+            --without-selinux \
+            --without-blkid \
+            --without-mount \
+            --disable-nls
+
+          # build
+          make -j$(nproc)
+
+          # strip binaries
+          strip src/fsck/f2fs_fsck \
+
+          # package result
+          cp src/fsck/f2fs_fsck ../../static-bin/          
             
     ###########################################
     # CREATE ARTIFACT TAR
