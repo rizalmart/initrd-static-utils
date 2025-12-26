@@ -30,6 +30,7 @@ jobs:
           libncurses5-dev libncursesw5-dev sudo libext2fs-dev \
           systemd-dev autopoint libdevmapper-dev libpopt-dev \
           libsepol-dev libjson-c-dev liblvm2-dev bzip2 perl
+          linux-libc-dev \
           
           
     - name: Prepare workspace
@@ -179,7 +180,7 @@ jobs:
         cc -static vercmp.c -o vercmp
         cp vercmp ../static-bin/
 
-    - name: Download and Build Static BusyBox
+    - name: Build Static BusyBox
       run: |
           cd build
           VERSION="1.36.1"
@@ -198,6 +199,7 @@ jobs:
           # We explicitly pass the CC and Extra LDFLAGS to ensure no glibc leakage
           make -j$(nproc) \
             CC=musl-gcc \
+            CPATH=/usr/include/x86_64-linux-gnu \
             LDFLAGS="-static" \
             CFLAGS="-static"
 
