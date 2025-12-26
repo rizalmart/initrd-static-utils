@@ -29,7 +29,7 @@ jobs:
           git wget curl xz-utils zstd libzstd-dev liblzo2-dev \
           libncurses5-dev libncursesw5-dev sudo libext2fs-dev \
           systemd-dev autopoint libdevmapper-dev libpopt-dev \
-          libsepol-dev libjson-c-dev liblvm2-dev bzip2 perl
+          libsepol-dev libjson-c-dev liblvm2-dev bzip2 perl \
           linux-libc-dev \
           
           
