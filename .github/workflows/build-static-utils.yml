@@ -67,7 +67,6 @@ jobs:
             --enable-widec \
             --prefix=/usr/local/musl
 
-            
           make -j$(nproc)
           sudo make install
     
@@ -79,6 +78,7 @@ jobs:
           cd dialog-*
           CC=musl-gcc \
           ./configure \
+            --host=x86_64-pc-linux-musl \
             --enable-static \
             --disable-shared \
             --with-ncursesw=/usr/local/musl \
