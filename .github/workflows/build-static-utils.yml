@@ -70,7 +70,7 @@ jobs:
           ./configure \
             --enable-static \
             --disable-shared \
-            CFLAGS="-Os -fdata-sections -ffunction-sections" \
+            CFLAGS="-Os -fdata-sections -ffunction-sections -Wall" \
             LDFLAGS="-static -s" \
             LIBS="-lncurses"
           make -j$(nproc)
@@ -86,9 +86,9 @@ jobs:
         git clone https://github.com/kdave/btrfs-progs.git
         cd btrfs-progs
         ./autogen.sh
-        CC=musl-gcc
+        CC=musl-gcc \
         ./configure --disable-shared --disable-documentation --disable-libudev \
-        CFLAGS="-static -O2 -Wno-error=incompatible-pointer-types" \
+        CFLAGS="-static -Os -Wno-error=incompatible-pointer-types -Wall" \
         LDFLAGS="-static"
         make -j$(nproc)
         cp btrfs ../../static-bin/
@@ -102,13 +102,13 @@ jobs:
         cd build
         git clone https://gitlab.com/cryptsetup/cryptsetup.git
         cd cryptsetup
-        CC=musl-gcc
         ./autogen.sh
+        CC=musl-gcc \
         ./configure --enable-static --disable-shared --with-crypto_backend=kernel \
         --build=x86_64-pc-linux-gnu \
         --host=x86_64-unknown-linux-musl \
         --disable-asciidoc --disable-ssh-token \
-        CFLAGS="-static -Os -Wno-error=incompatible-pointer-types" \
+        CFLAGS="-static -Os -Wno-error=incompatible-pointer-types -Wall" \
         LDFLAGS="-static"
         
         make -j$(nproc)
@@ -120,11 +120,13 @@ jobs:
         cd build
         git clone https://github.com/WayneD/rsync.git
         cd rsync        
-        git checkout v3.4.1
+        git checkout v3.3.0
         
         CC=musl-gcc ./configure \
             --build=x86_64-pc-linux-gnu \
             --host=x86_64-unknown-linux-musl \
+            --disable-shared \
+            --enable-static \            
             --disable-ipv6 \
             --disable-openssl \
             --disable-xxhash \
@@ -138,7 +140,7 @@ jobs:
             --with-included-zlib \
             --with-included-popt \
             --
-          CFLAGS="-static -O2 -Wno-error=incompatible-pointer-types" \
+          CFLAGS="-static -Os -Wno-error=incompatible-pointer-types" \
           LDFLAGS="-static"
         make
         strip ./rsync
@@ -152,7 +154,7 @@ jobs:
         cd build
         git clone https://kernel.googlesource.com/pub/scm/fs/ext2/e2fsprogs
         cd e2fsprogs
-        CC=musl-gcc ./configure --enable-static --disable-shared LDFLAGS="-static"
+        CC=musl-gcc ./configure --enable-static --disable-shared LDFLAGS="-static" CFLAGS="-static -Os -Wno-error=incompatible-pointer-types -Wall"
         make -j$(nproc)
         cp resize/resize2fs ../../static-bin/
         cp misc/findsuper ../../static-bin/find || true
@@ -167,10 +169,13 @@ jobs:
         wget https://ftp.gnu.org/gnu/grep/grep-3.11.tar.xz
         tar xf grep-*.tar.xz
         cd grep-*
-        CC=musl-gcc ./configure LDFLAGS="-static" --enable-static --disable-shared
+        CC=musl-gcc ./configure --enable-static --disable-shared \
+        LDFLAGS="-static" \
+        CFLAGS="-static -Os -Wno-error=incompatible-pointer-types -Wall"
         make -j$(nproc)
+        strip src/grep
         cp src/grep ../../static-bin/
-        strip ../../static-bin/grep
+        
 
     ###########################################
     # NANO
@@ -181,10 +186,27 @@ jobs:
         wget https://www.nano-editor.org/dist/v7/nano-7.2.tar.xz
         tar xf nano-*.tar.xz
         cd nano-*
-        ./configure --enable-static --disable-shared LDFLAGS="-static" CFLAGS="-Os -Wall -static"
+        CC=musl-gcc \
+        CFLAGS="-Os -static -Wall" \
+        LDFLAGS="-static" \
+        ./configure \
+          --host=x86_64-linux-musl \
+          --disable-nls \
+          --disable-color \
+          --disable-extra \
+          --disable-help \
+          --disable-justify \
+          --disable-libmagic \
+          --disable-mouse \
+          --disable-speller \
+          --disable-wrapping \
+          --enable-tiny \
+          --without-slang \
+          --without-ncursesw
+        
         make -j$(nproc)
+        strip cp src/nano
         cp src/nano ../../static-bin/
-        strip ../../static-bin/nano
 
     ###########################################
     # VERCMP (Woof-CE)
@@ -193,7 +215,8 @@ jobs:
       run: |
         cd build
         wget https://raw.githubusercontent.com/puppylinux-woof-CE/initrd_progs/refs/heads/master/pkg/w_apps_static/w_apps/vercmp.c
-        musl-gcc -static vercmp.c -o vercmp
+        musl-gcc -static -Os -Wall vercmp.c -o vercmp
+        strip vercmp
         cp vercmp ../static-bin/
 
     - name: Build dosfstools
@@ -215,7 +238,7 @@ jobs:
             --enable-static \
             --disable-shared \
             --without-udev \
-            CFLAGS="-Os -static" \
+            CFLAGS="-Os -static -Wall" \
             LDFLAGS="-static"
 
           make -j$(nproc)
