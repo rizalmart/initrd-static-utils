@@ -30,8 +30,8 @@ jobs:
           libncurses5-dev libncursesw5-dev sudo libext2fs-dev \
           systemd-dev autopoint libdevmapper-dev libpopt-dev \
           libsepol-dev libjson-c-dev liblvm2-dev bzip2 perl \
-          linux-libc-dev libncurses-dev \
-          uuid-dev libselinux-dev
+          linux-libc-dev libncurses-dev libgpg-error \
+          uuid-dev libselinux-dev libgcrypt20-dev
 
     - name: Setup Musl Header Links
       run: |
@@ -104,13 +104,16 @@ jobs:
         cd cryptsetup
         git checkout v1_7_x
         ./autogen.sh
+
+        export DEVMAPPER_LIBS="-ldevmapper -lrt"
+        export DEVMAPPER_CFLAGS="-I${deps_dir}/include"
+        
         ./configure --disable-nls \
         --disable-shared \
         --enable-static \
         --enable-static-cryptsetup \
         --disable-udev \
         --disable-selinux \
-        --disable-devmapper \
         --disable-veritysetup \
         --disable-python \
         CFLAGS="-Os -ffunction-sections -fdata-sections -fno-unwind-tables" \
