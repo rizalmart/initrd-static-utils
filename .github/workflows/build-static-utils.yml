@@ -104,12 +104,7 @@ jobs:
       run: |
         git clone https://github.com/WayneD/rsync.git
         cd rsync        
-        git checkout v3.4.1
-
-        wget -O config.sub https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub
-        wget -O config.guess https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess
-        chmod +x config.sub config.guess        
-
+        git checkout v3.3.0
         
         CC=musl-gcc \
         ./configure \
