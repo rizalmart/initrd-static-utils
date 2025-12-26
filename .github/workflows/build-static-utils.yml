@@ -51,11 +51,12 @@ jobs:
           tar xf ncurses.tar.gz
           cd ncurses-*
            CC=musl-gcc \
+          CC=musl-gcc \
           ./configure \
             --build=x86_64-pc-linux-gnu \
             --host=x86_64-pc-linux-musl \
             --without-cxx \
-            --without-cxx-binding \          
+            --without-cxx-binding \
             --with-termlib \
             --with-ticlib \
             --without-debug \
@@ -65,6 +66,7 @@ jobs:
             --enable-static \
             --enable-widec \
             --prefix=/usr/local/musl
+
             
           make -j$(nproc)
           sudo make install
