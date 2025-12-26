@@ -228,13 +228,12 @@ jobs:
       
           cd build
           VERSION="1.36.1"
-          wget https://busybox.net/downloads/busybox-${VERSION}.tar.bz2
-          tar -xf busybox-${VERSION}.tar.bz2
-          cd busybox-${VERSION}
-
+          git clone --depth 1 https://github.com/mirror/busybox.git
+          cd busybox
+          
           # 1. Create default config
           # We set CROSS_COMPILE to musl-gcc to ensure the whole build uses musl headers
-          make CROSS_COMPILE=musl-gcc defconfig
+          make CROSS_COMPILE=gcc defconfig
 
           # 2. Force static linking in the config file
           sed -i 's/# CONFIG_STATIC is not set/CONFIG_STATIC=y/' .config
