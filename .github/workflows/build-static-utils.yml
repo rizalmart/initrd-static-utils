@@ -180,19 +180,6 @@ jobs:
         strip ../../../static-bin/vercmp || true
 
     ###########################################
-    # NTFS PROGS (static ntfs-3g tools)
-    ###########################################
-    - name: Build ntfsprogs (static)
-      run: |
-        cd build
-        git clone https://github.com/tuxera/ntfs-3g.git
-        cd ntfs-3g
-        ./configure --enable-static --disable-shared LDFLAGS="-static"
-        make -j$(nproc)
-        cp ntfsprogs/ntfs* ../../static-bin/ || true
-        strip ../../static-bin/ntfsfix || true
-
-    ###########################################
     # CREATE ARTIFACT TAR
     ###########################################
     - name: Create tarball
