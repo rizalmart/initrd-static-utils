@@ -30,7 +30,7 @@ jobs:
           libncurses5-dev libncursesw5-dev sudo libext2fs-dev \
           systemd-dev autopoint libdevmapper-dev libpopt-dev \
           libsepol-dev libjson-c-dev liblvm2-dev bzip2 perl \
-          linux-libc-dev libncurses-dev libgpg-error \
+          linux-libc-dev libncurses-dev libgpg-error-dev \
           uuid-dev libselinux-dev libgcrypt20-dev
 
     - name: Setup Musl Header Links
@@ -106,7 +106,6 @@ jobs:
         ./autogen.sh
 
         export DEVMAPPER_LIBS="-ldevmapper -lrt"
-        export DEVMAPPER_CFLAGS="-I${deps_dir}/include"
         
         ./configure --disable-nls \
         --disable-shared \
