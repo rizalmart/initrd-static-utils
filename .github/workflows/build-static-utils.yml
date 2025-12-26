@@ -83,6 +83,22 @@ jobs:
     - name: Build btrfs-progs (static)
       run: |
         cd build
+
+        wget https://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
+        tar xf lzo-2.10.tar.gz
+        cd lzo-2.10
+        CC=musl-gcc \
+        ./configure \
+        --host=x86_64-linux-musl \
+        --enable-static \
+        --disable-shared \
+        --prefix=/usr/local/musl \
+        CFLAGS="-O2 -static" 
+        LDFLAGS="-static"
+        make -j$(nproc)
+        make install        
+        cd ..
+        
         git clone https://github.com/kdave/btrfs-progs.git
         cd btrfs-progs
         ./autogen.sh
