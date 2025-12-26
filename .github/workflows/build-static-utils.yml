@@ -31,7 +31,13 @@ jobs:
           systemd-dev autopoint libdevmapper-dev libpopt-dev \
           libsepol-dev libjson-c-dev liblvm2-dev bzip2 perl \
           linux-libc-dev \
-          
+
+    - name: Setup Musl Header Links
+      run: |
+          # Bridges the Musl and Linux Kernel header gap
+          sudo ln -s /usr/include/x86_64-linux-gnu/asm /usr/include/x86_64-linux-musl/asm
+          sudo ln -s /usr/include/linux /usr/include/x86_64-linux-musl/linux
+          sudo ln -s /usr/include/asm-generic /usr/include/x86_64-linux-musl/asm-generic         
           
     - name: Prepare workspace
       run: mkdir -p build static-bin
@@ -180,6 +186,37 @@ jobs:
         cc -static vercmp.c -o vercmp
         cp vercmp ../static-bin/
 
+    - name: Build dosfstools
+      run: |
+          cd build
+          
+          # Fetch latest version (4.2 is the current stable)
+          VERSION="4.2"
+          wget https://github.com/dosfstools/dosfstools/releases/download/v${VERSION}/dosfstools-${VERSION}.tar.gz
+          tar -xf dosfstools-${VERSION}.tar.gz
+          cd dosfstools-${VERSION}
+
+          # Configure for static Musl build
+          # --without-udev: Removes dependency on libudev
+          # --enable-compat-symlinks: Creates the classic 'mkdosfs' etc symlinks
+          ./configure \
+            CC=musl-gcc \
+            --host=x86_64-unknown-linux-musl \
+            --enable-static \
+            --disable-shared \
+            --without-udev \
+            CFLAGS="-Os -static" \
+            LDFLAGS="-static"
+
+          make -j$(nproc)
+          
+          # Strip the binaries to minimize size
+          strip src/mkfs.fat src/fsck.fat src/fatlabel
+
+          # Prepare for upload
+          mkdir -p ../dist
+          cp src/mkfs.fat src/fsck.fat src/fatlabel ../../static-bin/       
+
     - name: Build Static BusyBox
       run: |
 
@@ -206,7 +243,6 @@ jobs:
           # We explicitly pass the CC and Extra LDFLAGS to ensure no glibc leakage
           make -j$(nproc) \
             CC=musl-gcc \
-            CPATH=/usr/include/x86_64-linux-gnu \
             LDFLAGS="-static" \
             CFLAGS="-static"
 
