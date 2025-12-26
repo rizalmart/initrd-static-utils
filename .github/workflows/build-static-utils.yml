@@ -156,7 +156,7 @@ jobs:
         ./configure --enable-static --disable-shared LDFLAGS="-static"
         make -j$(nproc)
         cp resize/resize2fs ../../static-bin/
-        cp misc/findsuper ../../static-bin/find || true
+        cp e2fsck/e2fsck ../../static-bin/
         strip ../../static-bin/* || true
 
     ###########################################
@@ -233,8 +233,23 @@ jobs:
 
           # Prepare for upload
           mkdir -p ../dist
-          cp src/mkfs.fat src/fsck.fat src/fatlabel ../../static-bin/
-                  
+          cp src/mkfs.fat src/fsck.fat ../../static-bin/
+
+    - name: Clone f2fs-tools
+      run: |
+          cd build
+          git clone https://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs-tools.git
+          cd f2fs-tools
+          ./autogen.sh
+          ./configure \
+            --disable-shared \
+            --enable-static \
+            CFLAGS="-Os -static -ffunction-sections -fdata-sections" \
+            LDFLAGS="-static -Wl,--gc-sections -Wl,--as-needed"
+          
+          make -j$(nproc)          
+          cp fsck/fsck ../../static-bin/
+
             
     ###########################################
     # CREATE ARTIFACT TAR
