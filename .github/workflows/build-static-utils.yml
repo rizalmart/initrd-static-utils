@@ -108,6 +108,7 @@ jobs:
           --disable-shared \
           --enable-static_link \
           --without-udev-sync \
+          --disable-selinux \
           CFLAGS="-O2" \
           LDFLAGS="-static"
         
