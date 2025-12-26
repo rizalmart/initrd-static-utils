@@ -86,7 +86,10 @@ jobs:
         git clone https://github.com/kdave/btrfs-progs.git
         cd btrfs-progs
         ./autogen.sh
-        ./configure --disable-shared --disable-documentation LDFLAGS="-static" --disable-libudev
+        CC=musl-gcc
+        ./configure --disable-shared --disable-documentation --disable-libudev \
+        CFLAGS="-static -O2 -Wno-error=incompatible-pointer-types" \
+        LDFLAGS="-static"
         make -j$(nproc)
         cp btrfs ../../static-bin/
         strip ../../static-bin/btrfs || true
@@ -101,10 +104,13 @@ jobs:
         cd cryptsetup
         CC=musl-gcc
         ./autogen.sh
-        ./configure --enable-static --disable-shared LDFLAGS="-static" --with-crypto_backend=kernel \
+        ./configure --enable-static --disable-shared --with-crypto_backend=kernel \
+        --build=x86_64-pc-linux-gnu \
+        --host=x86_64-unknown-linux-musl \
         --disable-asciidoc --disable-ssh-token \
         CFLAGS="-static -Os -Wno-error=incompatible-pointer-types" \
-        LDFLAGS="-static" \
+        LDFLAGS="-static"
+        
         make -j$(nproc)
         cp ./cryptsetup ../../static-bin/
         strip ../../static-bin/cryptsetup || true
@@ -130,7 +136,8 @@ jobs:
             --disable-acl-support \
             --disable-xattr-support \
             --with-included-zlib \
-            --with-included-popt \         
+            --with-included-popt \
+            --
           CFLAGS="-static -O2 -Wno-error=incompatible-pointer-types" \
           LDFLAGS="-static"
         make
