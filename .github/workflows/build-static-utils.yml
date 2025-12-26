@@ -31,7 +31,7 @@ jobs:
           systemd-dev autopoint libdevmapper-dev libpopt-dev \
           libsepol-dev libjson-c-dev liblvm2-dev bzip2 perl \
           linux-libc-dev libncurses-dev \
-          libuuid-dev libselinux-dev
+          uuid-dev libselinux-dev
 
     - name: Setup Musl Header Links
       run: |
