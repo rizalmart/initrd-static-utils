@@ -244,13 +244,6 @@ jobs:
           # regenerate autotools (fix config.sub issues)
           ./autogen.sh || autoreconf -fi
 
-          # musl static build environment
-          export CC=musl-gcc
-          export CFLAGS="-O2 -static"
-          export LDFLAGS="-static"
-          export PKG_CONFIG=pkg-config
-          export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/share/pkgconfig
-
           # configure (static-safe options)
           ./configure \
             --host=x86_64-linux-musl \
@@ -259,7 +252,9 @@ jobs:
             --without-selinux \
             --without-blkid \
             --without-mount \
-            --disable-nls
+            --disable-nls \
+            CFLAGS="-O2 -static" \
+            LDFLAGS="-static"
 
           # build
           make -j$(nproc)
