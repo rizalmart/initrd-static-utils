@@ -182,6 +182,13 @@ jobs:
 
     - name: Build Static BusyBox
       run: |
+
+          # This bridges the gap between Musl and the Linux Kernel headers on Debian
+          # It fixes the "linux/errno.h" and "linux/kd.h" missing errors
+          sudo ln -s /usr/include/x86_64-linux-gnu/asm /usr/include/x86_64-linux-musl/asm
+          sudo ln -s /usr/include/linux /usr/include/x86_64-linux-musl/linux
+          sudo ln -s /usr/include/asm-generic /usr/include/x86_64-linux-musl/asm-generic
+      
           cd build
           VERSION="1.36.1"
           wget https://busybox.net/downloads/busybox-${VERSION}.tar.bz2
