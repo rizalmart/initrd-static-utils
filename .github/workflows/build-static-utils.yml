@@ -112,6 +112,8 @@ jobs:
         mkdir -p build && cd build
 
         export LD_LIBRARY_PATH=${DEPS_DIR}/lib:${LD_LIBRARY_PATH}
+        export PATH="${DEPS_DIR}/bin:$PATH"
+        export C_INCLUDE_PATH="${DEPS_DIR}/include:/usr/local/include:/usr/include"
         
         # --- Install musl toolchain ---        
         export CC=musl-gcc
@@ -169,8 +171,7 @@ jobs:
           ac_cv_func_rmdir=yes
 
         sed -i 's/SUBDIRS = .*/SUBDIRS = conf daemons include lib libdaemon libdm man/' Makefile
-        
-        LDFLAGS="-static -all-static -Wl,-s -Wl,--gc-sections" make install -j$(nproc)
+        make LDFLAGS='-all-static' install_device-mapper
 
         cd ..
 
