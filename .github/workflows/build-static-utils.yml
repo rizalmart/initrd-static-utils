@@ -124,7 +124,7 @@ jobs:
           --disable-blkid_wiping \
           --enable-write_install \
           CFLAGS="-O2" \
-          LDFLAGS="-all-static"
+          LDFLAGS="-static"
 
         sed -i 's/SUBDIRS = .*/SUBDIRS = conf daemons include lib libdaemon libdm man/' Makefile
 
