@@ -112,7 +112,7 @@ jobs:
         LIBGCRYPT_VER=1.11.2
         
         UTIL_LINUX_VER=2.39.3
-        UTIL_LINUX_FLD_VER=2.39.3
+        UTIL_LINUX_FLD_VER=2.39
         
         OPENSSL_VER=3.6.0
         
@@ -121,7 +121,7 @@ jobs:
         export LD_LIBRARY_PATH=${DEPS_DIR}/lib:${LD_LIBRARY_PATH}
         export PATH="${DEPS_DIR}/bin:$PATH"
         export C_INCLUDE_PATH="${DEPS_DIR}/include:/usr/local/include:/usr/include"
-        export PKG_CONFIG_PATH=${DEPS_DIR}/lib/pkgconfig
+        export PKG_CONFIG_PATH=${DEPS_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}
         export PKG_CONFIG=pkg-config
 
         export LIBGCRYPT_CFLAGS="-I$DEPS_DIR/include"
