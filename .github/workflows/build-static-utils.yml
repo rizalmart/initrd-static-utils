@@ -73,7 +73,10 @@ jobs:
 
             export CFLAGS="-Os -static"
             export LDFLAGS="-static"
-            export LIBS="-L/usr/local/musl/lib -lncursesw"
+            export LD_LIBRARY_PATH=/usr/local/musl/lib:$LD_LIBRARY_PATH
+            export C_INCLUDE_PATH=/usr/local/musl/include:$C_INCLUDE_PATH
+            
+            #export LIBS="-L/usr/local/musl/lib -lncursesw"
             
             CC=musl-gcc ./configure \
             --build=x86_64-linux-musl \
