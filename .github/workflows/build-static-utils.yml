@@ -146,13 +146,17 @@ jobs:
         # --- Build libdevmapper (lvm2) ---
         git clone $LVM2_REPO lvm2
         cd lvm2
-        CC=musl-gcc ac_cv_func_ftruncate=yes ac_cv_func_gethostname=yes ./configure \
+        CC=musl-gcc ./configure \
             --prefix=$DEPS_DIR \
             --disable-shared \
             --enable-static \
             --disable-udev_sync \
             --disable-dmeventd \
-            --disable-lvmpolld
+            --disable-lvmpolld \
+          ac_cv_func_ftruncate=yes \
+          ac_cv_func_gethostname=yes \
+          ac_cv_func_getpagesize=yes
+            
         make device-mapper -j$(nproc)
         make -C libdm install
         cd ..
