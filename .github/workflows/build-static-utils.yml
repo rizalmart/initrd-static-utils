@@ -146,7 +146,7 @@ jobs:
         # --- Build libdevmapper (lvm2) ---
         git clone $LVM2_REPO lvm2
         cd lvm2
-        CC=musl-gcc ac_cv_func_ftruncate=yes ./configure \
+        CC=musl-gcc ac_cv_func_ftruncate=yes ac_cv_func_gethostname=yes ./configure \
             --prefix=$DEPS_DIR \
             --disable-shared \
             --enable-static \
