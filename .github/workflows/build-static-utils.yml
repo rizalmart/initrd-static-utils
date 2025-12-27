@@ -175,7 +175,8 @@ jobs:
         wget https://www.kernel.org/pub/linux/utils/cryptsetup/v1.7/cryptsetup-$CRYPTSETUP_VER.tar.xz
         tar xf cryptsetup-$CRYPTSETUP_VER.tar.xz
         cd cryptsetup-$CRYPTSETUP_VER
-        
+
+        CC=musl-gcc \
         ./configure --disable-nls \
             --disable-shared \
             --enable-static \
