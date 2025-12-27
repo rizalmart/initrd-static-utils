@@ -19,7 +19,7 @@ jobs:
       run: |
         apt update
         apt install -y \
-          musl musl-tools musl-dev \
+          musl musl-tools musl-dev libgcc-15-dev \
           build-essential pkg-config \
           autoconf automake libtool \
           gettext bison flex \
