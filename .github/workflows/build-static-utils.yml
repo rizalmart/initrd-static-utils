@@ -51,7 +51,7 @@ jobs:
           wget https://invisible-island.net/datafiles/release/ncurses.tar.gz
           tar xf ncurses.tar.gz
           cd ncurses-*
-          ./configure \
+           CC=musl-gcc ./configure \
             --without-debug \
             --without-manpages \
             --without-tests \
@@ -68,7 +68,7 @@ jobs:
         wget https://invisible-island.net/datafiles/release/dialog.tar.gz
           tar xf dialog.tar.gz
           cd dialog-*
-          ./configure \
+           CC=musl-gcc ./configure \
             --enable-static \
             --disable-shared \
             CFLAGS="-Os -fdata-sections -ffunction-sections -fno-unwind-tables" \
@@ -87,213 +87,12 @@ jobs:
         git clone https://github.com/kdave/btrfs-progs.git
         cd btrfs-progs
         ./autogen.sh
-        ./configure --disable-shared --disable-documentation --disable-libudev
+         CC=musl-gcc ./configure --disable-shared --disable-documentation --disable-libudev
         CFLAGS="-Os -ffunction-sections -fdata-sections -fno-unwind-tables" \
         LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed"        
         make -j$(nproc)
         cp btrfs ../../static-bin/
         strip ../../static-bin/btrfs || true
-
-    ###########################################
-    # CRYPTSETUP (LUKS1)
-    ###########################################
-    - name: Build cryptsetup (static)
-      run: |
-        cd build
-
-        # --- Configuration ---
-        MUSL_PREFIX=/usr/local/musl
-        DEPS_DIR=$MUSL_PREFIX
-        
-        CRYPTSETUP_VER=1.7.5
-        CRYPTSETUP_FLD_VER=1.7
-        
-        LIBGPG_ERROR_VER=1.44
-        LIBGCRYPT_VER=1.8.0
-        
-        UTIL_LINUX_VER=2.39.3
-        UTIL_LINUX_FLD_VER=2.39
-        
-        #OPENSSL_VER=3.1.8
-        
-        LVM2_REPO=https://sourceware.org/git/lvm2.git
-        
-        export LD_LIBRARY_PATH=${DEPS_DIR}/lib:${LD_LIBRARY_PATH}
-        export PATH="${DEPS_DIR}/bin:$PATH"
-        export C_INCLUDE_PATH="${DEPS_DIR}/include:/usr/local/include:/usr/include"
-        export PKG_CONFIG_PATH=${DEPS_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}
-        export PKG_CONFIG=pkg-config
-
-        export LIBGCRYPT_CFLAGS="-I$DEPS_DIR/include"
-        export LIBGCRYPT_LIBS="-L$DEPS_DIR/lib -lgcrypt -lgpg-error"
-        
-        # --- Install musl toolchain ---        
-        export CC=musl-gcc
-        export CFLAGS="-Os -static -ffunction-sections -fdata-sections -std=c99 \
-        -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -DJENT_USE_GETPID=1 \
-         -I/usr/local/musl/include -include fcntl.h -include unistd.h -include limits.h"
-         
-        export LDFLAGS="-static -Wl,-s -Wl,--gc-sections -Wl,--as-needed"
-        export PKG_CONFIG_PATH="$DEPS_DIR/lib/pkgconfig"
-        export CPPFLAGS="-D_GNU_SOURCE"
-        
-        # --- Build libgpg-error ---
-        wget https://gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-$LIBGPG_ERROR_VER.tar.bz2
-        tar xf libgpg-error-$LIBGPG_ERROR_VER.tar.bz2
-        cd libgpg-error-$LIBGPG_ERROR_VER
-        CC=musl-gcc ./configure --enable-static --disable-shared --prefix=$DEPS_DIR
-        make -j$(nproc)
-        make install
-        cd ..
-        
-        # --- Build libgcrypt ---
-        wget https://gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-$LIBGCRYPT_VER.tar.bz2
-        tar xf libgcrypt-$LIBGCRYPT_VER.tar.bz2
-        cd libgcrypt-$LIBGCRYPT_VER
-        CC=musl-gcc ./configure \
-            --build=x86_64-pc-linux-musl \
-            --host=x86_64-pc-linux-musl \
-            --enable-static --disable-asm \
-            --enable-static-cryptsetup \
-            --disable-shared \
-            --disable-doc \
-            --disable-asm \
-            --disable-padlock-support \
-            --disable-aesni-support \
-            --disable-pclmul-support \
-            --disable-sse41-support \
-            --disable-drng-support \
-            --disable-avx-support \
-            --disable-avx2-support \
-            --enable-ciphers=arcfour,blowfish,cast5,des,aes,twofish,serpent,rfc2268,seed,camellia,idea \
-            --disable-rng-getentropy --prefix=$DEPS_DIR \
-            --with-libgcrypt-prefix=$DEPS_DIR \
-            ac_cv_func_ftruncate=yes \
-            ac_cv_func_gethostname=yes \
-            ac_cv_func_getpid=yes
-            
-        make -j$(nproc)
-        make install
-        cd ..
-        
-        # --- Build libdevmapper (lvm2) ---
-        git clone $LVM2_REPO lvm2
-        cd lvm2
-        CC=musl-gcc ./configure \
-            --prefix=$DEPS_DIR \
-            --disable-shared \
-            --enable-static \
-            --disable-selinux \
-            --disable-udev-systemd-background-jobs \
-            --with-user= --with-group= \
-            --disable-nls \
-            --disable-readline \
-            --disable-blkid_wiping \
-            --enable-write_install \
-            --disable-udev_sync \
-            --disable-dmeventd \
-            --disable-lvmpolld \
-          ac_cv_func_ftruncate=yes \
-          ac_cv_func_gethostname=yes \
-          ac_cv_func_getpagesize=yes \
-          ac_cv_func_rmdir=yes
-
-        sed -i 's/SUBDIRS = .*/SUBDIRS = conf daemons include lib libdaemon libdm man/' Makefile
-        make LDFLAGS='-all-static' install_device-mapper
-
-        cd ..
-
-        wget https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v$UTIL_LINUX_FLD_VER/util-linux-$UTIL_LINUX_VER.tar.xz
-        tar xf util-linux-$UTIL_LINUX_VER.tar.xz
-        cd util-linux-$UTIL_LINUX_VER
-        
-        CC=musl-gcc ./configure \
-          --prefix=$DEPS_DIR \
-          --disable-shared \
-          --enable-static \
-          --disable-all-programs \
-          --enable-libuuid \
-          --disable-nls
-
-        make
-        make install
-        
-        cd ..
-
-        #wget https://www.openssl.org/source/openssl-$OPENSSL_VER.tar.gz
-        #tar xf openssl-$OPENSSL_VER.tar.gz
-        #cd openssl-$OPENSSL_VER
-        
-        # Configure for static musl build
-        #CC=musl-gcc ./Configure linux-x86_64 no-shared no-async no-asm --prefix=$DEPS_DIR
-        
-        #make -j$(nproc)
-        #make install
-
-        #cd ..
-        
-        # --- Build cryptsetup ---
-        wget https://www.kernel.org/pub/linux/utils/cryptsetup/v$CRYPTSETUP_FLD_VER/cryptsetup-$CRYPTSETUP_VER.tar.xz
-        tar xf cryptsetup-$CRYPTSETUP_VER.tar.xz
-        cd cryptsetup-$CRYPTSETUP_VER
-
-        CC=musl-gcc \
-        ./configure --disable-nls \
-            --disable-shared \
-            --enable-static \
-            --enable-static-cryptsetup \
-            --disable-udev \
-            --disable-selinux \
-            --disable-veritysetup \
-            --disable-python \
-            --disable-asciidoc \
-            --disable-manpages \
-            --disable-nls \
-            --with-libgcrypt \
-            --disable-ssh-token \
-            ac_cv_lib_uuid_uuid_clear=yes \
-            ac_cv_lib_uuid_uuid_generate=yes \
-            ac_cv_lib_popt_poptConfigFileToString=yes \
-            ac_cv_lib_popt_poptGetContext=yes \
-            ac_cv_lib_devmapper_dm_task_set_uuid=yes \
-            ac_cv_func_ftruncate=yes \
-            ac_cv_func_gethostname=yes
-        
-        make -j$(nproc)
-
-        cp src/cryptsetup.static ../../static-bin/cryptsetup
-        strip ../../static-bin/cryptsetup
-
-    - name: Build minimal rsync
-      run: |
-        cd build
-        git clone https://github.com/WayneD/rsync.git
-        cd rsync        
-        git checkout v3.3.0
-
-        CC=musl-gcc \
-        ./configure \
-            --build=x86_64-pc-linux-gnu \
-            --host=x86_64-pc-linux-musl \
-            --disable-ipv6 \
-            --disable-openssl \
-            --disable-xxhash \
-            --disable-zstd \
-            --disable-lz4 \
-            --disable-simd \
-            --disable-md2man \
-            --disable-iconv-open \
-            --disable-acl-support \
-            --disable-xattr-support \
-            --with-included-zlib \
-            --with-included-popt \
-            --enable-static \
-            --disable-shared \            
-          CFLAGS="-static -Os -Wno-error=incompatible-pointer-types -ffunction-sections -fdata-sections -fno-unwind-tables" \
-          LDFLAGS="-static -Wl,--gc-sections -Wl,--as-needed"
-        make
-        strip ./rsync
-        cp ./rsync ../../static-bin/
 
     ###########################################
     # EXT2/EXT4 PROGS (e2fsprogs)
@@ -393,13 +192,15 @@ jobs:
           git clone https://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs-tools.git
           cd f2fs-tools
           ./autogen.sh
-          ./configure \
+           CC=musl-gcc ./configure \
             --disable-shared \
             --enable-static \
             CFLAGS="-Os -static -ffunction-sections -fdata-sections" \
             LDFLAGS="-static -Wl,--gc-sections -Wl,--as-needed"
           
-          make -j$(nproc)          
+          make -j$(nproc)
+
+          strip fsck/fsck.f2fs
           cp fsck/fsck.f2fs ../../static-bin/
 
             
