@@ -133,7 +133,7 @@ jobs:
         wget https://gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-$LIBGCRYPT_VER.tar.bz2
         tar xf libgcrypt-$LIBGCRYPT_VER.tar.bz2
         cd libgcrypt-$LIBGCRYPT_VER
-        CC=musl-gcc PKG_CONFIG_PATH=$PKG_CONFIG_PATH ac_cv_func_ftruncate=yes ./configure \
+        CC=musl-gcc PKG_CONFIG_PATH=$PKG_CONFIG_PATH ac_cv_func_ftruncate=yes ac_cv_func_gethostname=yes ./configure \
             --enable-static --disable-asm --disable-fuzzing \
             --disable-rng-getentropy --disable-shared --prefix=$DEPS_DIR
         make -j$(nproc)
