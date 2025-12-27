@@ -225,6 +225,10 @@ jobs:
             --disable-selinux \
             --disable-veritysetup \
             --disable-python \
+            --disable-asciidoc \
+            --disable-manpages \
+            --disable-nls \
+            --with-libgcrypt \
             ac_cv_lib_uuid_uuid_clear=yes \
             ac_cv_lib_uuid_uuid_generate=yes \
             ac_cv_lib_popt_poptConfigFileToString=yes \
