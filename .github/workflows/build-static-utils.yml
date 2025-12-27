@@ -110,6 +110,8 @@ jobs:
         LVM2_REPO=https://sourceware.org/git/lvm2.git
         
         mkdir -p build && cd build
+
+        export LD_LIBRARY_PATH=${DEPS_DIR}/lib:${LD_LIBRARY_PATH}
         
         # --- Install musl toolchain ---        
         export CC=musl-gcc
@@ -168,7 +170,7 @@ jobs:
 
         sed -i 's/SUBDIRS = .*/SUBDIRS = conf daemons include lib libdaemon libdm man/' Makefile
         
-        LDFLAGS="-static -all-static -Wl,-s -Wl,--gc-sections" make install_device-mapper -j$(nproc)
+        LDFLAGS="-static -all-static -Wl,-s -Wl,--gc-sections" make install -j$(nproc)
 
         cd ..
 
