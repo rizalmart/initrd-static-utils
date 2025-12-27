@@ -105,7 +105,7 @@ jobs:
         MUSL_PREFIX=/usr/local/musl
         DEPS_DIR=$MUSL_PREFIX
         CRYPTSETUP_VER=1.7.5
-        LIBGPG_ERROR_VER=1.58.1
+        LIBGPG_ERROR_VER=1.58
         LIBGCRYPT_VER=1.11.2
         LVM2_REPO=https://sourceware.org/git/lvm2.git
         
