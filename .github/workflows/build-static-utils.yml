@@ -109,12 +109,11 @@ jobs:
         LIBGCRYPT_VER=1.11.2
         LVM2_REPO=https://sourceware.org/git/lvm2.git
         
-        mkdir -p build && cd build
-
         export LD_LIBRARY_PATH=${DEPS_DIR}/lib:${LD_LIBRARY_PATH}
         export PATH="${DEPS_DIR}/bin:$PATH"
         export C_INCLUDE_PATH="${DEPS_DIR}/include:/usr/local/include:/usr/include"
         export PKG_CONFIG_PATH=${DEPS_DIR}/lib/pkgconfig
+        export PKG_CONFIG=pkg-config
 
         export LIBGCRYPT_CFLAGS="-I$DEPS_DIR/include"
         export LIBGCRYPT_LIBS="-L$DEPS_DIR/lib -lgcrypt -lgpg-error"
