@@ -101,66 +101,82 @@ jobs:
       run: |
         cd build
 
-        git clone https://gitlab.com/cryptsetup/cryptsetup.git
-        cd cryptsetup
-        mkdir lvm2-dep
-        deps_dir=$(pwd)/lvm2-dep
+        # --- Configuration ---
+        MUSL_PREFIX=/usr/local/musl
+        DEPS_DIR=$MUSL_PREFIX
+        CRYPTSETUP_VER=1.7.5
+        LIBGPG_ERROR_VER=1.48
+        LIBGCRYPT_VER=1.10.0
+        LVM2_REPO=https://sourceware.org/git/lvm2.git
         
-        git clone https://sourceware.org/git/lvm2.git
+        mkdir -p build && cd build
+        
+        # --- Install musl toolchain ---        
+        export CC=musl-gcc
+        export CFLAGS="-Os -static -ffunction-sections -fdata-sections"
+        export LDFLAGS="-static -Wl,-s -Wl,--gc-sections"
+        export PKG_CONFIG_PATH="$DEPS_DIR/lib/pkgconfig"
+        
+        # --- Build libgpg-error ---
+        wget https://gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-$LIBGPG_ERROR_VER.tar.bz2
+        tar xf libgpg-error-$LIBGPG_ERROR_VER.tar.bz2
+        cd libgpg-error-$LIBGPG_ERROR_VER
+        CC=musl-gcc ./configure --enable-static --disable-shared --prefix=$DEPS_DIR
+        make -j$(nproc)
+        make install
+        cd ..
+        
+        # --- Build libgcrypt ---
+        wget https://gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-$LIBGCRYPT_VER.tar.bz2
+        tar xf libgcrypt-$LIBGCRYPT_VER.tar.bz2
+        cd libgcrypt-$LIBGCRYPT_VER
+        CC=musl-gcc PKG_CONFIG_PATH=$PKG_CONFIG_PATH ./configure \
+            --enable-static --disable-shared --prefix=$DEPS_DIR
+        make -j$(nproc)
+        make install
+        cd ..
+        
+        # --- Build libdevmapper (lvm2) ---
+        git clone $LVM2_REPO lvm2
         cd lvm2
-
-        export ac_cv_func_malloc_0_nonnull=yes
+        CC=musl-gcc ./configure \
+            --prefix=$DEPS_DIR \
+            --disable-shared \
+            --enable-static \
+            --disable-udev_sync \
+            --disable-dmeventd \
+            --disable-lvmpolld
+        make device-mapper -j$(nproc)
+        make -C libdm install
+        cd ..
         
-        ./configure \
-          --prefix=${deps_dir} \
-          --disable-shared \
-          --enable-static \
-          --enable-static_link \
-          --disable-selinux \
-          --disable-udev-systemd-background-jobs \
-          --with-user= --with-group= \
-          --disable-nls \
-          --disable-readline \
-          --disable-blkid_wiping \
-          --enable-write_install \
-          CFLAGS="-O2" \
-          LDFLAGS="-static"
-
-        sed -i 's/SUBDIRS = .*/SUBDIRS = conf daemons include lib libdaemon libdm man/' Makefile
-
-        make install_device-mapper
-
-        cp libdm/ioctl/libdevmapper.a ${deps_dir}/lib/libdevmapper.a
-        cp libdm/libdevmapper.pc ${deps_dir}/lib/pkgconfig
-        cp libdm/libdevmapper.h ${deps_dir}/include
+        # --- Build cryptsetup ---
+        wget https://www.kernel.org/pub/linux/utils/cryptsetup/v1.7/cryptsetup-$CRYPTSETUP_VER.tar.xz
+        tar xf cryptsetup-$CRYPTSETUP_VER.tar.xz
+        cd cryptsetup-$CRYPTSETUP_VER
         
-        cd ..        
-        
-        git checkout v1_7_x
-        ./autogen.sh
-
-        export ac_cv_lib_uuid_uuid_clear=yes
-        export ac_cv_lib_uuid_uuid_generate=yes
-        export ac_cv_lib_popt_poptConfigFileToString=yes
-        export ac_cv_lib_popt_poptGetContext=yes
-        export ac_cv_lib_devmapper_dm_task_set_uuid=yes
-        export DEVMAPPER_LIBS="-L${deps_dir}/lib/ -ldevmapper -lrt"
-        export DEVMAPPER_CFLAGS="-I${deps_dir}/include"
+        export CFLAGS="-Os -static -ffunction-sections -fdata-sections -I$DEPS_DIR/include"
+        export LDFLAGS="-static \
+        -L$DEPS_DIR/lib -ldevmapper -lrt \
+        -lgcrypt -lgpg-error \
+        -luuid -lblkid -lpthread -lm"
         
         ./configure --disable-nls \
-        --disable-shared \
-        --enable-static \
-        --enable-static-cryptsetup \
-        --disable-udev \
-        --disable-selinux \
-        --disable-veritysetup \
-        --disable-python \
-        CFLAGS="-Os -static-libgcc -ffunction-sections -fdata-sections -fno-unwind-tables" \
-        LDFLAGS="-static -static-libgcc -L${deps_dir}/lib -ldevmapper -lrt -lgcrypt -lgpg-error -luuid -lblkid -lpthread -lm -lselinux -ludev -s -Wl,-Bstatic -Wl,--gc-sections -Wl,--as-needed" \
-
-        sed -i 's|-ludev||' src/Makefile
+            --disable-shared \
+            --enable-static \
+            --enable-static-cryptsetup \
+            --disable-udev \
+            --disable-selinux \
+            --disable-veritysetup \
+            --disable-python \
+            ac_cv_lib_uuid_uuid_clear=yes \
+            ac_cv_lib_uuid_uuid_generate=yes \
+            ac_cv_lib_popt_poptConfigFileToString=yes \
+            ac_cv_lib_popt_poptGetContext=yes \
+            ac_cv_lib_devmapper_dm_task_set_uuid=yes
         
         make -j$(nproc)
+
         cp src/cryptsetup.static ../../static-bin/cryptsetup
         strip ../../static-bin/cryptsetup
 
