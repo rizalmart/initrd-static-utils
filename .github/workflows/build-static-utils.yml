@@ -118,6 +118,7 @@ jobs:
          -I/usr/local/musl/include -include fcntl.h -include unistd.h -include limits.h"
         export LDFLAGS="-static -Wl,-s -Wl,--gc-sections"
         export PKG_CONFIG_PATH="$DEPS_DIR/lib/pkgconfig"
+        export CPPFLAGS="-D_GNU_SOURCE"
         
         # --- Build libgpg-error ---
         wget https://gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-$LIBGPG_ERROR_VER.tar.bz2
