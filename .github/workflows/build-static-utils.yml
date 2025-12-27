@@ -139,7 +139,18 @@ jobs:
         tar xf libgcrypt-$LIBGCRYPT_VER.tar.bz2
         cd libgcrypt-$LIBGCRYPT_VER
         CC=musl-gcc PKG_CONFIG_PATH=$PKG_CONFIG_PATH ./configure \
-            --enable-static --disable-asm --disable-fuzzing \
+            --enable-static --disable-asm \
+            --disable-shared \
+            --disable-doc \
+            --disable-asm \
+            --disable-padlock-support \
+            --disable-aesni-support \
+            --disable-pclmul-support \
+            --disable-sse41-support \
+            --disable-drng-support \
+            --disable-avx-support \
+            --disable-avx2-support \
+            --enable-ciphers=arcfour,blowfish,cast5,des,aes,twofish,serpent,rfc2268,seed,camellia,idea \
             --disable-rng-getentropy --disable-shared --prefix=$DEPS_DIR \
             ac_cv_func_ftruncate=yes
             ac_cv_func_gethostname=yes
