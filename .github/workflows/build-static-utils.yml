@@ -68,12 +68,24 @@ jobs:
         wget https://invisible-island.net/datafiles/release/dialog.tar.gz
           tar xf dialog.tar.gz
           cd dialog-*
-           CC=musl-gcc ./configure \
-            --enable-static \
-            --disable-shared \
-            CFLAGS="-Os -fdata-sections -ffunction-sections -fno-unwind-tables" \
-            LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed" \
-            LIBS="-lncurses"
+
+            export CFLAGS="-Os -static"
+            export LDFLAGS="-static"
+            export LIBS="-L/usr/local/musl/lib -lncursesw"
+            
+            CC=musl-gcc ./configure \
+            --host=x86_64-linux-musl \
+            --prefix=/usr/local/musl \
+            --with-ncursesw \
+            --disable-nls \
+            --disable-rpath 
+            
+            #CC=musl-gcc ./configure \
+            #--enable-static \
+            #--disable-shared \
+            #CFLAGS="-Os -fdata-sections -ffunction-sections -fno-unwind-tables" \
+            #LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed" \
+            #LIBS="-lncurses"
           make -j$(nproc)
           strip ./dialog
           cp dialog ../../static-bin/
