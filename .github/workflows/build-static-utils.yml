@@ -133,7 +133,7 @@ jobs:
         tar xf libgcrypt-$LIBGCRYPT_VER.tar.bz2
         cd libgcrypt-$LIBGCRYPT_VER
         CC=musl-gcc PKG_CONFIG_PATH=$PKG_CONFIG_PATH ./configure \
-            --enable-static --disable-shared --prefix=$DEPS_DIR
+            --enable-static --disable-asm --disable-shared --prefix=$DEPS_DIR
         make -j$(nproc)
         make install
         cd ..
