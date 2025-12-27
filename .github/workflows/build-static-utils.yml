@@ -58,8 +58,9 @@ jobs:
             --disable-widec \
             --enable-static \
             --without-cxx-binding \
-            --prefix=/usr/local/musl
+            --prefix=/usr/local/musl \
             --disable-shared
+            
           make -j$(nproc)
           sudo make install
     
@@ -87,6 +88,7 @@ jobs:
             #CFLAGS="-Os -fdata-sections -ffunction-sections -fno-unwind-tables" \
             #LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed" \
             #LIBS="-lncurses"
+            
           make -j$(nproc)
           strip ./dialog
           cp dialog ../../static-bin/
