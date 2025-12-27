@@ -143,7 +143,7 @@ jobs:
         # --- Build libdevmapper (lvm2) ---
         git clone $LVM2_REPO lvm2
         cd lvm2
-        CC=musl-gcc ./configure \
+        CC=musl-gcc ac_cv_func_ftruncate=yes ./configure \
             --prefix=$DEPS_DIR \
             --disable-shared \
             --enable-static \
@@ -177,7 +177,8 @@ jobs:
             ac_cv_lib_uuid_uuid_generate=yes \
             ac_cv_lib_popt_poptConfigFileToString=yes \
             ac_cv_lib_popt_poptGetContext=yes \
-            ac_cv_lib_devmapper_dm_task_set_uuid=yes
+            ac_cv_lib_devmapper_dm_task_set_uuid=yes \
+            ac_cv_func_ftruncate=yes
         
         make -j$(nproc)
 
