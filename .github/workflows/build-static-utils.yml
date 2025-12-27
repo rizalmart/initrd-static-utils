@@ -150,6 +150,13 @@ jobs:
             --prefix=$DEPS_DIR \
             --disable-shared \
             --enable-static \
+            --disable-selinux \
+            --disable-udev-systemd-background-jobs \
+            --with-user= --with-group= \
+            --disable-nls \
+            --disable-readline \
+            --disable-blkid_wiping \
+            --enable-write_install \
             --disable-udev_sync \
             --disable-dmeventd \
             --disable-lvmpolld \
@@ -157,21 +164,17 @@ jobs:
           ac_cv_func_gethostname=yes \
           ac_cv_func_getpagesize=yes \
           ac_cv_func_rmdir=yes
-            
-        make device-mapper -j$(nproc)
-        make -C libdm install
+
+        sed -i 's/SUBDIRS = .*/SUBDIRS = conf daemons include lib libdaemon libdm man/' Makefile
+        
+        LDFLAGS="-static -all-static -Wl,-s -Wl,--gc-sections" make install_device-mapper -j$(nproc)
+
         cd ..
         
         # --- Build cryptsetup ---
         wget https://www.kernel.org/pub/linux/utils/cryptsetup/v1.7/cryptsetup-$CRYPTSETUP_VER.tar.xz
         tar xf cryptsetup-$CRYPTSETUP_VER.tar.xz
         cd cryptsetup-$CRYPTSETUP_VER
-        
-        #export CFLAGS="-Os -static -ffunction-sections -fdata-sections -I$DEPS_DIR/include -std=c99"
-        export LDFLAGS="-static \
-        -L$DEPS_DIR/lib -ldevmapper -lrt \
-        -lgcrypt -lgpg-error \
-        -luuid -lblkid -lpthread -lm"
         
         ./configure --disable-nls \
             --disable-shared \
