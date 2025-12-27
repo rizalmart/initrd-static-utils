@@ -155,7 +155,8 @@ jobs:
             --disable-lvmpolld \
           ac_cv_func_ftruncate=yes \
           ac_cv_func_gethostname=yes \
-          ac_cv_func_getpagesize=yes
+          ac_cv_func_getpagesize=yes \
+          ac_cv_func_rmdir=yes
             
         make device-mapper -j$(nproc)
         make -C libdm install
