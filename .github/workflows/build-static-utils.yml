@@ -224,7 +224,7 @@ jobs:
         cd openssl-$OPENSSL_VER
         
         # Configure for static musl build
-        CC=musl-gcc ./Configure linux-x86_64 no-shared no-async no-asm --prefix=$DEPS_DIR --with-missing-musl-patch
+        CC=musl-gcc ./Configure linux-x86_64 no-shared no-async no-asm --prefix=$DEPS_DIR
         
         make -j$(nproc)
         make install
