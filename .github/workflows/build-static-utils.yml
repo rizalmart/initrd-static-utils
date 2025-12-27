@@ -104,9 +104,9 @@ jobs:
         # --- Configuration ---
         MUSL_PREFIX=/usr/local/musl
         DEPS_DIR=$MUSL_PREFIX
-        CRYPTSETUP_VER=1.7.5
+        CRYPTSETUP_VER=2.8.3
         LIBGPG_ERROR_VER=1.58
-        LIBGCRYPT_VER=1.10.3
+        LIBGCRYPT_VER=1.11.2
         LVM2_REPO=https://sourceware.org/git/lvm2.git
         
         export LD_LIBRARY_PATH=${DEPS_DIR}/lib:${LD_LIBRARY_PATH}
