@@ -106,7 +106,7 @@ jobs:
         DEPS_DIR=$MUSL_PREFIX
         CRYPTSETUP_VER=1.7.5
         LIBGPG_ERROR_VER=1.48
-        LIBGCRYPT_VER=1.10.0
+        LIBGCRYPT_VER=1.11.2
         LVM2_REPO=https://sourceware.org/git/lvm2.git
         
         mkdir -p build && cd build
