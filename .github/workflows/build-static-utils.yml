@@ -156,7 +156,7 @@ jobs:
         --disable-veritysetup \
         --disable-python \
         CFLAGS="-Os -static-libgcc -ffunction-sections -fdata-sections -fno-unwind-tables" \
-        LDFLAGS="-static -static-libgcc -s -Wl,-Bstatic -Wl,--gc-sections -Wl,--as-needed -ldevmapper -lgpg-error" \
+        LDFLAGS="-static -static-libgcc -s -Wl,-Bstatic -Wl,--gc-sections -Wl,--as-needed -ldevmapper -lgpg-error -lpthread -lm" \
 
         sed -i 's|-ludev||' src/Makefile
         
