@@ -184,8 +184,7 @@ jobs:
           --enable-libuuid \
           --disable-nls
         
-        make -C libuuid -j$(nproc)
-        make -C libuuid install
+        make install
         
         cd ..
         
