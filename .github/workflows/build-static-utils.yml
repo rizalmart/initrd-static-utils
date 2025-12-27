@@ -178,7 +178,8 @@ jobs:
             ac_cv_lib_popt_poptConfigFileToString=yes \
             ac_cv_lib_popt_poptGetContext=yes \
             ac_cv_lib_devmapper_dm_task_set_uuid=yes \
-            ac_cv_func_ftruncate=yes
+            ac_cv_func_ftruncate=yes \
+            ac_cv_func_gethostname=yes
         
         make -j$(nproc)
 
