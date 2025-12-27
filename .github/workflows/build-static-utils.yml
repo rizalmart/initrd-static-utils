@@ -113,7 +113,9 @@ jobs:
         
         # --- Install musl toolchain ---        
         export CC=musl-gcc
-        export CFLAGS="-Os -static -ffunction-sections -fdata-sections -std=c99"
+        export CFLAGS="-Os -static -ffunction-sections -fdata-sections -std=c99 \
+        -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 \
+         -I/usr/local/musl/include"
         export LDFLAGS="-static -Wl,-s -Wl,--gc-sections"
         export PKG_CONFIG_PATH="$DEPS_DIR/lib/pkgconfig"
         
