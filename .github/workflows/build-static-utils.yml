@@ -113,7 +113,7 @@ jobs:
         
         # --- Install musl toolchain ---        
         export CC=musl-gcc
-        export CFLAGS="-Os -static -ffunction-sections -fdata-sections"
+        export CFLAGS="-Os -static -ffunction-sections -fdata-sections -std=c99"
         export LDFLAGS="-static -Wl,-s -Wl,--gc-sections"
         export PKG_CONFIG_PATH="$DEPS_DIR/lib/pkgconfig"
         
@@ -155,7 +155,7 @@ jobs:
         tar xf cryptsetup-$CRYPTSETUP_VER.tar.xz
         cd cryptsetup-$CRYPTSETUP_VER
         
-        export CFLAGS="-Os -static -ffunction-sections -fdata-sections -I$DEPS_DIR/include"
+        export CFLAGS="-Os -static -ffunction-sections -fdata-sections -I$DEPS_DIR/include -std=c99"
         export LDFLAGS="-static \
         -L$DEPS_DIR/lib -ldevmapper -lrt \
         -lgcrypt -lgpg-error \
