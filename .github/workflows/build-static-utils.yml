@@ -58,6 +58,7 @@ jobs:
             --disable-widec \
             --enable-static \
             --without-cxx-binding \
+            --prefix=/usr/local/musl
             --disable-shared
           make -j$(nproc)
           sudo make install
@@ -74,7 +75,7 @@ jobs:
             export LIBS="-L/usr/local/musl/lib -lncursesw"
             
             CC=musl-gcc ./configure \
-            --host=x86_64-linux-musl \
+            --build=x86_64-linux-musl \
             --prefix=/usr/local/musl \
             --with-ncursesw \
             --disable-nls \
