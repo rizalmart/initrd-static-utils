@@ -169,7 +169,8 @@ jobs:
             --disable-rng-getentropy --prefix=$DEPS_DIR \
             --with-libgcrypt-prefix=$DEPS_DIR \
             ac_cv_func_ftruncate=yes \
-            ac_cv_func_gethostname=yes
+            ac_cv_func_gethostname=yes \
+            ac_cv_func_getpid=yes
             
         make -j$(nproc)
         make install
