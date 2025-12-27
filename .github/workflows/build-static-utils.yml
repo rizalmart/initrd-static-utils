@@ -229,7 +229,7 @@ jobs:
             --disable-manpages \
             --disable-nls \
             --with-libgcrypt \
-            --without-libssh \
+            --disable-ssh-token \
             ac_cv_lib_uuid_uuid_clear=yes \
             ac_cv_lib_uuid_uuid_generate=yes \
             ac_cv_lib_popt_poptConfigFileToString=yes \
