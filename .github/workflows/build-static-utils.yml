@@ -30,7 +30,7 @@ jobs:
           libncurses5-dev libncursesw5-dev sudo libext2fs-dev \
           systemd-dev autopoint libdevmapper-dev libpopt-dev \
           libsepol-dev libjson-c-dev liblvm2-dev bzip2 perl \
-          linux-libc-dev libncurses-dev libgpg-error-dev \
+          linux-libc-dev libncurses-dev \
           uuid-dev libselinux-dev libgcrypt20-dev libaio-dev
 
     - name: Setup Musl Header Links
@@ -156,7 +156,7 @@ jobs:
         --disable-veritysetup \
         --disable-python \
         CFLAGS="-Os -pipe -static-libgcc -ffunction-sections -fdata-sections -fno-unwind-tables" \
-        LDFLAGS="-static -static-libgcc -s -Wl,-Bstatic -Wl,--gc-sections -Wl,--as-needed" \
+        LDFLAGS="-static -static-libgcc -s -Wl,-Bstatic -Wl,--gc-sections -Wl,--as-needed -ldevmapper -lgpg-error" \
 
         sed -i 's|-ludev||' src/Makefile
         
