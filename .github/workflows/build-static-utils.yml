@@ -143,6 +143,7 @@ jobs:
         cd libgcrypt-$LIBGCRYPT_VER
         CC=musl-gcc ./configure \
             --enable-static --disable-asm \
+            --enable-static-cryptsetup \
             --disable-shared \
             --disable-doc \
             --disable-asm \
@@ -155,6 +156,7 @@ jobs:
             --disable-avx2-support \
             --enable-ciphers=arcfour,blowfish,cast5,des,aes,twofish,serpent,rfc2268,seed,camellia,idea \
             --disable-rng-getentropy --prefix=$DEPS_DIR \
+            --with-libgcrypt-prefix=$DEPS_DIR \
             ac_cv_func_ftruncate=yes \
             ac_cv_func_gethostname=yes
             
