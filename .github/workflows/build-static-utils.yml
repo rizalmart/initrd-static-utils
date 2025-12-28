@@ -30,7 +30,7 @@ jobs:
           libncurses5-dev libncursesw5-dev sudo libext2fs-dev \
           systemd-dev autopoint libdevmapper-dev libpopt-dev \
           libsepol-dev libjson-c-dev liblvm2-dev bzip2 perl \
-          linux-libc-dev libncurses-dev \
+          linux-libc-dev libncurses-dev libreadline-dev \
           uuid-dev libselinux-dev libgcrypt20-dev libaio-dev
 
     - name: Setup musl header links
@@ -135,9 +135,11 @@ jobs:
           NNN_VER=4.9
           
           # ---- toolchain ----
-          export CC=musl-gcc
-          export CFLAGS="-O2 -pipe -static"
-          export LDFLAGS="-static"
+          export CC=gcc
+          #export CFLAGS="-O2 -pipe -static"
+          #export LDFLAGS="-static"
+          export CFLAGS="-static -Os -Wno-error=incompatible-pointer-types -ffunction-sections -fdata-sections -fno-unwind-tables" \
+          export LDFLAGS="-static -Wl,--gc-sections -Wl,--as-needed"
           
           # ---- optional: disable everything non-essential ----
           # See: https://github.com/jarun/nnn/blob/master/README.md#build
@@ -146,28 +148,6 @@ jobs:
           export RANLIB=ranlib
           export AR=ar
 
-          RL_VER=8.2
-
-          wget https://ftp.gnu.org/gnu/readline/readline-$RL_VER.tar.gz
-          tar xf readline-$RL_VER.tar.gz
-          cd readline-$RL_VER
-          
-          # ---- configure ----
-          ./configure \
-            --host=x86_64-linux-musl \
-            --prefix=/usr/local/musl \
-            --disable-shared \
-            --enable-static \
-            --with-curses \
-            bash_cv_wcwidth_broken=no
-          
-          # ---- build ----
-          make -j$(nproc)
-          
-          # ---- install ----
-          make install
-
-          cd ..
           
           # ---- fetch source ----
           wget https://github.com/jarun/nnn/archive/v$NNN_VER.tar.gz
@@ -175,7 +155,6 @@ jobs:
           cd nnn-$NNN_VER
           
           # ---- build ----
-          make clean
           make NNN_OPTS="$NNN_OPTS"
           
           # ---- install ----
