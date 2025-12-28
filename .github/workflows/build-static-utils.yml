@@ -133,7 +133,12 @@ jobs:
         CC=musl-gcc ./configure --disable-backtrace --disable-shared --disable-documentation --disable-libudev \
         CFLAGS="-Os -ffunction-sections -fdata-sections -fno-unwind-tables" \
         LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed"        
+        ac_cv_lib_lzo2_lzo_version=yes \
+        LZO_CFLAGS="-I/usr/local/musl/include" \
+        LZO_LIBS="-L/usr/local/musl/lib -llzo2"
+        
         make -j$(nproc)
+        
         cp btrfs ../../static-bin/
         strip ../../static-bin/btrfs || true
 
