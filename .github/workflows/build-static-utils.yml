@@ -75,7 +75,7 @@ jobs:
             tar xf dialog-$DIALOG_VERSION.tgz
             cd dialog-$DIALOG_VERSION
 
-            export CFLAGS="-Os -static -DHAVE_COLOR=1 -DHAVE_SETLOCALE"
+            export CFLAGS="-Os -static -DHAVE_COLOR=1 -DHAVE_SETLOCALE -ltinfo"
             export LDFLAGS="-static -L/usr/local/musl/lib"
             export LD_LIBRARY_PATH=/usr/local/musl/lib:$LD_LIBRARY_PATH
             export C_INCLUDE_PATH=/usr/local/musl/include:$C_INCLUDE_PATH
@@ -84,7 +84,7 @@ jobs:
             CC=musl-gcc ./configure \
             --build=x86_64-linux-musl \
             --prefix=/usr/local/musl \
-            --with-ncurses \
+            --with-ncursesw \
             --disable-nls \
             --disable-rpath 
             
