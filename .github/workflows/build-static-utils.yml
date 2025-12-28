@@ -57,6 +57,7 @@ jobs:
             --without-tests \
             --disable-widec \
             --enable-static \
+            --with-termlib \
             --without-cxx-binding \
             --prefix=/usr/local/musl \
             --disable-shared
@@ -75,10 +76,12 @@ jobs:
             cd dialog-$DIALOG_VERSION
 
             export CFLAGS="-Os -static -DHAVE_COLOR=1 -DHAVE_SETLOCALE"
-            export LDFLAGS="-static"
+            export LDFLAGS="-static -L/usr/local/musl/lib"
             export LD_LIBRARY_PATH=/usr/local/musl/lib:$LD_LIBRARY_PATH
             export C_INCLUDE_PATH=/usr/local/musl/include:$C_INCLUDE_PATH
-            export CPPFLAGS="-I/usr/local/musl/include/ncursesw -I/usr/local/musl/include/ncursesw -I/usr/local/musl/include/ncurses"
+            export CPPFLAGS="-I/usr/local/musl/include/ncursesw -I/usr/local/musl/include/ncurses"
+
+            export LIBS="-lncursesw -ltinfo"
             
             #export LIBS="-L/usr/local/musl/lib -lncursesw"
             
