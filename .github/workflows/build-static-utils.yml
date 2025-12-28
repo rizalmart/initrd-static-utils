@@ -68,9 +68,10 @@ jobs:
     - name: Build dialog (static)
       run: |
         cd build 
-        wget https://invisible-island.net/datafiles/release/dialog.tar.gz
-          tar xf dialog.tar.gz
-          cd dialog-*
+        
+            wget https://invisible-mirror.net/archives/dialog/dialog-1.3-20230629.tgz
+            tar xf dialog-1.3-20230629.tgz
+            cd dialog-1.3-20230629
 
             export CFLAGS="-Os -static"
             export LDFLAGS="-static"
