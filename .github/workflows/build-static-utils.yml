@@ -55,7 +55,7 @@ jobs:
             --without-debug \
             --without-manpages \
             --without-tests \
-            --enable-widec \
+            --disable-widec \
             --enable-static \
             --with-termlib \
             --without-cxx-binding \
