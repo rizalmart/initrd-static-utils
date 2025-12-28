@@ -131,8 +131,8 @@ jobs:
         cd btrfs-progs
         ./autogen.sh
         CC=musl-gcc ./configure --disable-backtrace --disable-shared --disable-documentation --disable-libudev \
-        CFLAGS="-Os -ffunction-sections -fdata-sections -fno-unwind-tables" \
-        LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed"        
+        CFLAGS="-Os -static -I/usr/local/musl/include" \
+        LDFLAGS="-static -L/usr/local/musl/lib" \ 
         ac_cv_lib_lzo2_lzo_version=yes \
         LZO_CFLAGS="-I/usr/local/musl/include" \
         LZO_LIBS="-L/usr/local/musl/lib -llzo2"
