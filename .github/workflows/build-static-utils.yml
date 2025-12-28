@@ -90,13 +90,6 @@ jobs:
             --disable-nls \
             --disable-rpath 
             
-            #CC=musl-gcc ./configure \
-            #--enable-static \
-            #--disable-shared \
-            #CFLAGS="-Os -fdata-sections -ffunction-sections -fno-unwind-tables" \
-            #LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed" \
-            #LIBS="-lncurses"
-            
           make -j$(nproc)
           strip ./dialog
           cp dialog ../../static-bin/
@@ -140,6 +133,11 @@ jobs:
         wget https://www.nano-editor.org/dist/v7/nano-7.2.tar.xz
         tar xf nano-*.tar.xz
         cd nano-*
+
+            export LDFLAGS="-static -L/usr/local/musl/lib"
+            export LD_LIBRARY_PATH=/usr/local/musl/lib:$LD_LIBRARY_PATH
+            export C_INCLUDE_PATH=/usr/local/musl/include:$C_INCLUDE_PATH
+            export CPPFLAGS="-I/usr/local/musl/include/ncursesw -I/usr/local/musl/include/ncurses"
         
         CC=musl-gcc ./configure \
         --host=x86_64-linux-musl \
