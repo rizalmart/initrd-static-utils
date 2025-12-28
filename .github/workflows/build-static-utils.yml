@@ -67,10 +67,12 @@ jobs:
     - name: Build dialog (static)
       run: |
         cd build 
-        
-            wget https://invisible-mirror.net/archives/dialog/dialog-1.3-20230629.tgz
-            tar xf dialog-1.3-20230629.tgz
-            cd dialog-1.3-20230629
+
+            DIALOG_VERSION=1.3-20251223
+            
+            wget https://invisible-mirror.net/archives/dialog/dialog-$DIALOG_VERSION.tgz
+            tar xf dialog-$DIALOG_VERSION.tgz
+            cd dialog-$DIALOG_VERSION
 
             export CFLAGS="-Os -static -DHAVE_COLOR=1"
             export LDFLAGS="-static"
