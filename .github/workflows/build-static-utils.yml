@@ -149,6 +149,8 @@ jobs:
         --disable-color \
         --without-slang \
         --disable-gnulib \
+        --without-libintl-prefix \
+        --without-libiconv-prefix \
         ncursesw_CFLAGS="-I/usr/local/musl/include" \
         ncursesw_LIBS="-L/usr/local/musl/lib -lncursesw" \
         CFLAGS="-Os -static" \
@@ -156,7 +158,10 @@ jobs:
         
         sed -i 's|.*HAVE_USE_DEFAULT_COLORS.*|#define HAVE_USE_DEFAULT_COLORS 1|' config.h
         sed -i 's|.*GNU_WORDBOUNDS.*|#define GNU_WORDBOUNDS 1|' config.h
-        
+
+        rm -f error.c error.h
+        sed -i '/error\.c/d' Makefile.in src/Makefile.in
+
         make -j$(nproc)
         cp src/nano ../../static-bin/
         strip ../../static-bin/nano
