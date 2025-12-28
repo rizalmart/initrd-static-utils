@@ -257,6 +257,26 @@ jobs:
         strip ../../static-bin/cryptsetup
 
     ###########################################
+    # NANO
+    ###########################################
+    - name: Build nano (static)
+      run: |
+        cd build
+        wget https://www.nano-editor.org/dist/v2.9/nano-2.9.2.tar.xz
+        tar xf nano-*.tar.xz
+        cd nano-*
+        ./configure --enable-static --disable-shared --enable-tiny \
+        CFLAGS="-Os -static -ffunction-sections -fdata-sections" \
+        LDFLAGS="-static -Wl,--gc-sections -Wl,--as-needed"
+        
+        sed -i 's|.*HAVE_USE_DEFAULT_COLORS.*|#define HAVE_USE_DEFAULT_COLORS 1|' config.h
+        sed -i 's|.*GNU_WORDBOUNDS.*|#define GNU_WORDBOUNDS 1|' config.h
+        
+        make -j$(nproc)
+        cp src/nano ../../static-bin/
+        strip ../../static-bin/nano
+
+    ###########################################
     # CREATE ARTIFACT TAR
     ###########################################
     - name: Create tarball
