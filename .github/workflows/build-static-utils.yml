@@ -142,10 +142,30 @@ jobs:
           # ---- optional: disable everything non-essential ----
           # See: https://github.com/jarun/nnn/blob/master/README.md#build
           export NNN_OPTS="O_NERD=0 O_ICONS=0 O_GITSTATUS=0 O_QSORT=0"
+
+          export RANLIB=ranlib
+          export AR=ar
+
+          wget https://ftp.gnu.org/gnu/readline/readline-$RL_VER.tar.gz
+          tar xf readline-$RL_VER.tar.gz
+          cd readline-$RL_VER
           
-          # ---- build deps (only needed if not present) ----
-          # ncurses must be static
-          # ensure: libncursesw.a exists
+          # ---- configure ----
+          ./configure \
+            --host=x86_64-linux-musl \
+            --prefix="$PREFIX" \
+            --disable-shared \
+            --enable-static \
+            --with-curses \
+            bash_cv_wcwidth_broken=no
+          
+          # ---- build ----
+          make -j$(nproc)
+          
+          # ---- install ----
+          make install
+
+          cd ..
           
           # ---- fetch source ----
           wget https://github.com/jarun/nnn/archive/v$NNN_VER.tar.gz
