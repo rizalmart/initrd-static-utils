@@ -148,6 +148,7 @@ jobs:
         --disable-spell \
         --disable-color \
         --without-slang \
+        --disable-gnulib \
         ncursesw_CFLAGS="-I/usr/local/musl/include" \
         ncursesw_LIBS="-L/usr/local/musl/lib -lncursesw" \
         CFLAGS="-Os -static" \
