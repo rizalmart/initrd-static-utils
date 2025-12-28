@@ -111,7 +111,8 @@ jobs:
         LZO_VERSION=2.10
 
         export LD_LIBRARY_PATH=/usr/local/musl/lib:$LD_LIBRARY_PATH
-
+        export PKG_CONFIG_PATH=/usr/local/musl/lib/pkgconfig:$PKG_CONFIG_PATH
+        
         wget https://www.oberhumer.com/opensource/lzo/download/lzo-$LZO_VERSION.tar.gz
         tar xf lzo-$LZO_VERSION.tar.gz
         cd lzo-$LZO_VERSION
