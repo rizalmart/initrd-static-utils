@@ -194,8 +194,8 @@ jobs:
         cd rsync        
         git checkout v3.4.1
         ./configure \
-            --build=x86_64-pc-linux-gnu \
-            --host=x86_64-unknown-linux-musl \
+            --build=x86_64-pc-linux-gcc \
+            --host=x86_64-unknown-linux-gcc \
             --disable-iconv
             --disable-nls
             --disable-ipv6 \
