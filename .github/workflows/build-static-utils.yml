@@ -163,7 +163,7 @@ jobs:
         tar xf util-linux-$UTIL_LINUX_VER.tar.xz
         cd util-linux-$UTIL_LINUX_VER
         
-        ./configure \
+        CC=musl-gcc ./configure \
             --host=x86_64-linux-musl \
             --prefix=/usr/local/musl \
             --enable-static \
