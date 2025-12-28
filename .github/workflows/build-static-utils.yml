@@ -76,20 +76,19 @@ jobs:
             wget https://invisible-mirror.net/archives/dialog/dialog-$DIALOG_VERSION.tgz
             tar xf dialog-$DIALOG_VERSION.tgz
             cd dialog-$DIALOG_VERSION
-
-            export CFLAGS="-Os -static -DHAVE_COLOR=1 -DHAVE_SETLOCALE"
-            export LDFLAGS="-static -L/usr/local/musl/lib"
-            export LD_LIBRARY_PATH=/usr/local/musl/lib:$LD_LIBRARY_PATH
-            export C_INCLUDE_PATH=/usr/local/musl/include:$C_INCLUDE_PATH
-            export CPPFLAGS="-I/usr/local/musl/include/ncursesw -I/usr/local/musl/include/ncurses"
             
             CC=musl-gcc ./configure \
             --build=x86_64-linux-musl \
             --prefix=/usr/local/musl \
             --with-ncursesw \
             --disable-nls \
-            --disable-rpath 
-            
+            --disable-rpath \
+             CFLAGS="-Os -static -DHAVE_COLOR=1 -DHAVE_SETLOCALE" \
+             LDFLAGS="-static -L/usr/local/musl/lib" \
+             LD_LIBRARY_PATH=/usr/local/musl/lib:$LD_LIBRARY_PATH \
+             C_INCLUDE_PATH=/usr/local/musl/include:$C_INCLUDE_PATH \
+             CPPFLAGS="-I/usr/local/musl/include/ncursesw -I/usr/local/musl/include/ncurses"
+             
           make -j$(nproc)
           strip ./dialog
           cp dialog ../../static-bin/
