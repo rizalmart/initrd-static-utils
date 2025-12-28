@@ -172,7 +172,7 @@ jobs:
           git clone https://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs-tools.git
           cd f2fs-tools
           ./autogen.sh
-           CC=musl-gcc ./configure \
+          ./configure \
             --disable-shared \
             --enable-static \
             CFLAGS="-Os -static -ffunction-sections -fdata-sections" \
