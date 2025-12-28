@@ -140,9 +140,20 @@ jobs:
         wget https://www.nano-editor.org/dist/v7/nano-7.2.tar.xz
         tar xf nano-*.tar.xz
         cd nano-*
-        ./configure --enable-static --disable-shared --enable-tiny \
-        CFLAGS="-Os -static -ffunction-sections -fdata-sections" \
-        LDFLAGS="-static -Wl,--gc-sections -Wl,--as-needed"
+        
+        CC=musl-gcc ./configure \
+        --host=x86_64-linux-musl \
+        --prefix=/usr/local/musl \
+        --enable-utf8 \
+        --disable-nls \
+        --disable-libmagic \
+        --disable-spell \
+        --disable-color \
+        --without-slang \
+        ncursesw_CFLAGS="-I/usr/local/musl/include" \
+        ncursesw_LIBS="-L/usr/local/musl/lib -lncursesw" \
+        CFLAGS="-Os -static" \
+        LDFLAGS="-static"
         
         sed -i 's|.*HAVE_USE_DEFAULT_COLORS.*|#define HAVE_USE_DEFAULT_COLORS 1|' config.h
         sed -i 's|.*GNU_WORDBOUNDS.*|#define GNU_WORDBOUNDS 1|' config.h
@@ -224,12 +235,16 @@ jobs:
         ./configure \
             --build=x86_64-pc-linux-gnu \
             --host=x86_64-unknown-linux-musl \
+            --disable-iconv
+            --disable-nls
             --disable-ipv6 \
             --disable-openssl \
             --disable-xxhash \
             --disable-zstd \
             --disable-lz4 \
             --disable-simd \
+            --disable-zlib \
+            --disable-missing-tty \
             --disable-md2man \
             --disable-iconv-open \
             --disable-acl-support \
