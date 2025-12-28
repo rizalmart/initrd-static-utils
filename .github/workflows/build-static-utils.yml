@@ -74,7 +74,7 @@ jobs:
             tar xf dialog-$DIALOG_VERSION.tgz
             cd dialog-$DIALOG_VERSION
 
-            export CFLAGS="-Os -static -DHAVE_COLOR=1"
+            export CFLAGS="-Os -static -DHAVE_COLOR=1 -DHAVE_SETLOCALE"
             export LDFLAGS="-static"
             export LD_LIBRARY_PATH=/usr/local/musl/lib:$LD_LIBRARY_PATH
             export C_INCLUDE_PATH=/usr/local/musl/include:$C_INCLUDE_PATH
