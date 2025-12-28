@@ -124,13 +124,51 @@ jobs:
         cp src/grep ../../static-bin/
         strip ../../static-bin/grep
 
+    - name: Build nnn (static)
+      run: |
+        cd build
+
+          ###########################################
+          # NNN
+          ###########################################
+      
+          # ---- toolchain ----
+          export CC=musl-gcc
+          export CFLAGS="-O2 -pipe -static"
+          export LDFLAGS="-static"
+          
+          # ---- optional: disable everything non-essential ----
+          # See: https://github.com/jarun/nnn/blob/master/README.md#build
+          export NNN_OPTS="O_NERD=0 O_ICONS=0 O_GITSTATUS=0 O_QSORT=0"
+          
+          # ---- build deps (only needed if not present) ----
+          # ncurses must be static
+          # ensure: libncursesw.a exists
+          
+          # ---- fetch source ----
+          wget https://github.com/jarun/nnn/archive/v$NNN_VER.tar.gz
+          tar xf v$NNN_VER.tar.gz
+          cd nnn-$NNN_VER
+          
+          # ---- build ----
+          make clean
+          make \
+            CC="$CC" \
+            CFLAGS="$CFLAGS" \
+            LDFLAGS="$LDFLAGS" \
+            NNN_OPTS="$NNN_OPTS"
+          
+          # ---- install ----
+          strip nnn
+          cp nnn ../../static-bin/
+          
     ###########################################
     # NANO
     ###########################################
     - name: Build nano (static)
       run: |
         cd build
-        wget https://www.nano-editor.org/dist/v2.8/nano-2.8.4.tar.xz
+        wget https://www.nano-editor.org/dist/v4/nano-4.3.tar.xz
         tar xf nano-*.tar.xz
         cd nano-*
 
@@ -142,15 +180,7 @@ jobs:
         CC=musl-gcc ./configure \
         --host=x86_64-linux-musl \
         --prefix=/usr/local/musl \
-        --enable-utf8 \
-        --disable-nls \
-        --disable-libmagic \
-        --disable-spell \
-        --disable-color \
-        --without-slang \
-        --disable-gnulib \
-        --without-libintl-prefix \
-        --without-libiconv-prefix \
+        --enable-tiny --enable-color --enable-nanorc \
         ncursesw_CFLAGS="-I/usr/local/musl/include" \
         ncursesw_LIBS="-L/usr/local/musl/lib -lncursesw" \
         CFLAGS="-Os -static" \
