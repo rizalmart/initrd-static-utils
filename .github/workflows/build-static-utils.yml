@@ -57,9 +57,11 @@ jobs:
             --without-tests \
             --enable-widec \
             --enable-static \
+            --enable-pc-files \
             --with-termlib \
             --without-cxx-binding \
             --prefix=/usr/local/musl \
+            --without-ada \
             --disable-shared
             
           make -j$(nproc)
