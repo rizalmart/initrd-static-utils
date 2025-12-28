@@ -86,7 +86,6 @@ jobs:
             CC=musl-gcc ./configure \
             --build=x86_64-linux-musl \
             --prefix=/usr/local/musl \
-            --with-ncursesw \
             --disable-nls \
             --disable-rpath 
             
