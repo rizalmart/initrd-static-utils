@@ -130,7 +130,7 @@ jobs:
         git clone https://github.com/kdave/btrfs-progs.git
         cd btrfs-progs
         ./autogen.sh
-        CC=musl-gcc ./configure --build=x86_64-linux-musl --host=x86_64-unknown-linux-musl --disable-backtrace --disable-shared --disable-documentation --disable-libudev \
+        CC=musl-gcc ./configure --build=x86_64-linux-musl --host=x86_64-unknown-linux-musl --target=x86_64-pc-linux-musl --disable-backtrace --disable-shared --disable-documentation --disable-libudev \
         CFLAGS="-Os -static -I/usr/local/musl/include" \
         LDFLAGS="-static -L/usr/local/musl/lib" \ 
         ac_cv_lib_lzo2_lzo_version=yes \
