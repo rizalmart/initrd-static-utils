@@ -126,12 +126,74 @@ jobs:
         make install
         cd ..
 
+        ######################################
+        # zlib (static)
+        ######################################
+        ZLIB_VER=1.3.1
         
+        wget -q https://zlib.net/zlib-$ZLIB_VER.tar.gz
+        tar xf zlib-$ZLIB_VER.tar.gz
+        cd zlib-$ZLIB_VER
+        
+        CC=musl-gcc ./configure \
+            --static \
+            --prefix=/usr/local/musl
+        
+        make -j$(nproc)
+        make install
+        cd ..
+        
+        ######################################
+        # zstd (static)
+        ######################################
+        ZSTD_VER=1.5.6
+        wget -q https://github.com/facebook/zstd/releases/download/v$ZSTD_VER/zstd-$ZSTD_VER.tar.gz
+        tar xf zstd-$ZSTD_VER.tar.gz
+        cd zstd-$ZSTD_VER
+        
+        CC=musl-gcc make -j$(nproc)
+        CC=musl-gcc make install PREFIX=/usr/local/musl
+        cd ..
+        
+        ######################################
+        # util-linux (libuuid + libblkid only)
+        ######################################
+        UTIL_LINUX_VER=2.39.4
+        wget -q https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v2.39/util-linux-$UTIL_LINUX_VER.tar.xz
+        tar xf util-linux-$UTIL_LINUX_VER.tar.xz
+        cd util-linux-$UTIL_LINUX_VER
+        
+        ./configure \
+            --host=x86_64-linux-musl \
+            --prefix=/usr/local/musl \
+            --enable-static \
+            --disable-shared \
+            --disable-all-programs \
+            --enable-libuuid \
+            --enable-libblkid \
+            --disable-nls \
+            --disable-selinux \
+            --disable-libmount \
+            --disable-mount \
+            --disable-fsck \
+            --disable-partx \
+            --disable-uuidd \
+            --disable-wall \
+            --disable-setpriv \
+            --disable-su \
+            --disable-login \
+            --disable-chfn-chsh \
+            --disable-runuser
+        
+        make -j$(nproc)
+        make install
+        cd ..
+
         git clone https://github.com/kdave/btrfs-progs.git
         cd btrfs-progs
         ./autogen.sh
         CC=musl-gcc ./configure --build=x86_64-linux-musl --host=x86_64-unknown-linux-musl --target=x86_64-pc-linux-musl --disable-backtrace --disable-shared --disable-documentation --disable-libudev \
-        CFLAGS="-Os -static -I/usr/local/musl/include -I/usr/local/include -I/usr/include" \
+        CFLAGS="-Os -static -I/usr/local/musl/include" \
         LDFLAGS="-static -L/usr/local/musl/lib" \ 
         ac_cv_lib_lzo2_lzo_version=yes \
         LZO_CFLAGS="-I/usr/local/musl/include" \
