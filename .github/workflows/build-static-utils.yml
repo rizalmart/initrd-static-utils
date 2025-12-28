@@ -57,6 +57,7 @@ jobs:
             --without-tests \
             --disable-widec \
             --enable-static \
+            --enable-color \
             --without-cxx-binding \
             --prefix=/usr/local/musl \
             --disable-shared
