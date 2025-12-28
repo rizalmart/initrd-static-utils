@@ -33,7 +33,7 @@ jobs:
           linux-libc-dev libncurses-dev \
           uuid-dev libselinux-dev libgcrypt20-dev libaio-dev
 
-    - name: Setup Musl Header Links
+    - name: Setup musl header links
       run: |
           # Bridges the Musl and Linux Kernel header gap
           sudo ln -s /usr/include/x86_64-linux-gnu/asm /usr/include/x86_64-linux-musl/asm
@@ -130,7 +130,7 @@ jobs:
         git clone https://github.com/kdave/btrfs-progs.git
         cd btrfs-progs
         ./autogen.sh
-        CC=musl-gcc ./configure --disable-backtrace --disable-shared --disable-documentation --disable-libudev \
+        CC=musl-gcc ./configure --build=x86_64-linux-musl --disable-backtrace --disable-shared --disable-documentation --disable-libudev \
         CFLAGS="-Os -static -I/usr/local/musl/include" \
         LDFLAGS="-static -L/usr/local/musl/lib" \ 
         ac_cv_lib_lzo2_lzo_version=yes \
