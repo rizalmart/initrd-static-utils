@@ -131,7 +131,9 @@ jobs:
           ###########################################
           # NNN
           ###########################################
-      
+  
+          NNN_VER=4.9
+          
           # ---- toolchain ----
           export CC=musl-gcc
           export CFLAGS="-O2 -pipe -static"
