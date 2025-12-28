@@ -75,7 +75,7 @@ jobs:
             export LDFLAGS="-static"
             export LD_LIBRARY_PATH=/usr/local/musl/lib:$LD_LIBRARY_PATH
             export C_INCLUDE_PATH=/usr/local/musl/include:$C_INCLUDE_PATH
-            export CPPFLAGS="-I/usr/local/musl/include"
+            export CPPFLAGS="-I/usr/local/musl/include/ncursesw -I/usr/local/musl/include/ncursesw -I/usr/local/musl/include/ncurses"
             
             #export LIBS="-L/usr/local/musl/lib -lncursesw"
             
