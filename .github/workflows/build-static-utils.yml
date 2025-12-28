@@ -110,7 +110,7 @@ jobs:
         git clone https://github.com/kdave/btrfs-progs.git
         cd btrfs-progs
         ./autogen.sh
-         CC=musl-gcc ./configure --disable-shared --disable-documentation --disable-libudev
+        CC=musl-gcc ./configure --disable-backtrace --disable-shared --disable-documentation --disable-libudev \
         CFLAGS="-Os -ffunction-sections -fdata-sections -fno-unwind-tables" \
         LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed"        
         make -j$(nproc)
