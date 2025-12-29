@@ -189,41 +189,6 @@ jobs:
           cp fsck/fsck.f2fs ../../static-bin/
 
     ###########################################
-    # rsync-static
-    ###########################################
-
-    - name: Build minimal rsync
-      run: |
-        cd build
-        git clone https://github.com/WayneD/rsync.git
-        cd rsync        
-        git checkout v3.4.1
-        ./configure \
-            --disable-iconv
-            --disable-nls
-            --disable-ipv6 \
-            --disable-openssl \
-            --disable-xxhash \
-            --disable-zstd \
-            --disable-lz4 \
-            --disable-simd \
-            --disable-zlib \
-            --disable-missing-tty \
-            --disable-md2man \
-            --disable-iconv-open \
-            --disable-acl-support \
-            --disable-xattr-support \
-            --with-included-zlib \
-            --with-included-popt \
-            --enable-static \
-            --disable-shared \            
-          CFLAGS="-static -Os -Wno-error=incompatible-pointer-types -ffunction-sections -fdata-sections -fno-unwind-tables" \
-          LDFLAGS="-static -Wl,--gc-sections -Wl,--as-needed"
-        make
-        strip ./rsync
-        cp ./rsync ../../static-bin/
-
-    ###########################################
     # BTRFS-PROGS
     ###########################################
     - name: Build btrfs-progs (static)
