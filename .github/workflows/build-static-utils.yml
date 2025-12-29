@@ -89,7 +89,13 @@ jobs:
              C_INCLUDE_PATH=/usr/local/musl/include:$C_INCLUDE_PATH \
              CPPFLAGS="-I/usr/local/musl/include/ncursesw -I/usr/local/musl/include/ncurses"
              
-          make -j$(nproc)
+          make -j$(nproc) \
+          CFLAGS="-Os -static -DHAVE_COLOR=1 -DHAVE_SETLOCALE" \
+          LDFLAGS="-static -L/usr/local/musl/lib" \
+          CPPFLAGS="-I/usr/local/musl/include/ncursesw -I/usr/local/musl/include/ncurses" \
+          LD_LIBRARY_PATH=/usr/local/musl/lib:$LD_LIBRARY_PATH \
+          C_INCLUDE_PATH=/usr/local/musl/include:$C_INCLUDE_PATH
+             
           strip ./dialog
           cp dialog ../../static-bin/
 
