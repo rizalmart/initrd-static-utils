@@ -205,23 +205,6 @@ jobs:
         strip ../../static-bin/btrfs || true
 
     ###########################################
-    # CRYPTSETUP (LUKS1)
-    ###########################################
-    - name: Build cryptsetup (static)
-      run: |
-        cd build
-        git clone https://gitlab.com/cryptsetup/cryptsetup.git
-        cd cryptsetup
-        git checkout v1_7_x
-        ./autogen.sh
-        ./configure --enable-static --disable-shared --with-crypto_backend=kernel --disable-udev \
-        --disable-asciidoc --disable-ssh-token --enable-static-cryptsetup --disable-nls --disable-veritysetup --disable-python
-        
-        make -j$(nproc)
-        cp src/cryptsetup ../../static-bin/
-        strip ../../static-bin/cryptsetup
-
-    ###########################################
     # CREATE ARTIFACT TAR
     ###########################################
     - name: Create tarball
