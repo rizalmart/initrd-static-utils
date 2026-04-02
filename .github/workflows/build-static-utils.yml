@@ -35,7 +35,6 @@ jobs:
 
     - name: Setup musl header links
       run: |
-          # Bridges the Musl and Linux Kernel header gap
           sudo ln -s /usr/include/x86_64-linux-gnu/asm /usr/include/x86_64-linux-musl/asm
           sudo ln -s /usr/include/linux /usr/include/x86_64-linux-musl/linux
           sudo ln -s /usr/include/asm-generic /usr/include/x86_64-linux-musl/asm-generic         
@@ -44,7 +43,7 @@ jobs:
       run: mkdir -p build static-bin
 
     ###########################################
-    # DIALOG
+    # NCURSES (Dependency for dialog & progress)
     ###########################################
     - name: Build ncurses static-only (minimal)
       run: |
@@ -67,12 +66,13 @@ jobs:
           make -j$(nproc)
           sudo make install
     
+    ###########################################
+    # DIALOG
+    ###########################################
     - name: Build dialog (static)
       run: |
         cd build 
-
             DIALOG_VERSION=1.3-20251223
-            
             wget https://invisible-mirror.net/archives/dialog/dialog-$DIALOG_VERSION.tgz
             tar xf dialog-$DIALOG_VERSION.tgz
             cd dialog-$DIALOG_VERSION
@@ -85,22 +85,59 @@ jobs:
             --disable-rpath \
              CFLAGS="-Os -static -DHAVE_COLOR=1 -DHAVE_SETLOCALE" \
              LDFLAGS="-static -L/usr/local/musl/lib" \
-             LD_LIBRARY_PATH=/usr/local/musl/lib:$LD_LIBRARY_PATH \
-             C_INCLUDE_PATH=/usr/local/musl/include:$C_INCLUDE_PATH \
              CPPFLAGS="-I/usr/local/musl/include/ncursesw -I/usr/local/musl/include/ncurses"
              
-          make -j$(nproc) \
-          CFLAGS="-Os -static -DHAVE_COLOR=1 -DHAVE_SETLOCALE" \
-          LDFLAGS="-static -L/usr/local/musl/lib" \
-          CPPFLAGS="-I/usr/local/musl/include/ncursesw -I/usr/local/musl/include/ncurses" \
-          LD_LIBRARY_PATH=/usr/local/musl/lib:$LD_LIBRARY_PATH \
-          C_INCLUDE_PATH=/usr/local/musl/include:$C_INCLUDE_PATH
-             
+          make -j$(nproc)
           strip ./dialog
           cp dialog ../../static-bin/
 
     ###########################################
-    # EXT2/EXT4 PROGS (e2fsprogs)
+    # PROGRESS
+    ###########################################
+    - name: Build progress (static)
+      run: |
+        cd build
+        git clone https://github.com/Xfennec/progress.git
+        cd progress
+        make CC=musl-gcc \
+             CFLAGS="-Os -static -D_GNU_SOURCE -I/usr/local/musl/include/ncursesw -I/usr/local/musl/include" \
+             LDFLAGS="-static -L/usr/local/musl/lib" \
+             LDLIBS="-lncursesw -ltinfo" \
+             -j$(nproc)
+        strip progress
+        cp progress ../../static-bin/
+
+    ###########################################
+    # COREUTILS (CP & MV ONLY)
+    ###########################################
+    - name: Build Coreutils (static cp/mv)
+      run: |
+        cd build
+        # Using version 9.5 as a stable reference
+        wget https://ftp.gnu.org/gnu/coreutils/coreutils-9.5.tar.xz
+        tar xf coreutils-9.5.tar.xz
+        cd coreutils-9.5
+        
+        # FORCE_UNSAFE_CONFIGURE=1 is required to run configure as root
+        FORCE_UNSAFE_CONFIGURE=1 \
+        CC=musl-gcc \
+        ./configure \
+          --host=x86_64-linux-musl \
+          --enable-static \
+          --disable-nls \
+          --disable-libcap \
+          --disable-acl \
+          LDFLAGS="-static" \
+          CFLAGS="-Os"
+          
+        # We only need to build the 'src' directory to get the binaries
+        make -j$(nproc)
+        
+        strip src/cp src/mv
+        cp src/cp src/mv ../../static-bin/
+
+    ###########################################
+    # EXT2/EXT4 PROGS
     ###########################################
     - name: Build e2fsprogs (resize2fs, find, etc.)
       run: |
@@ -140,19 +177,16 @@ jobs:
         strip vercmp
         cp vercmp ../static-bin/
 
+    ###########################################
+    # DOSFSTOOLS
+    ###########################################
     - name: Build dosfstools
       run: |
           cd build
-          
-          # Fetch latest version (4.2 is the current stable)
           VERSION="4.2"
           wget https://github.com/dosfstools/dosfstools/releases/download/v${VERSION}/dosfstools-${VERSION}.tar.gz
           tar -xf dosfstools-${VERSION}.tar.gz
           cd dosfstools-${VERSION}
-
-          # Configure for static Musl build
-          # --without-udev: Removes dependency on libudev
-          # --enable-compat-symlinks: Creates the classic 'mkdosfs' etc symlinks
           ./configure \
             CC=musl-gcc \
             --host=x86_64-unknown-linux-musl \
@@ -161,16 +195,13 @@ jobs:
             --without-udev \
             CFLAGS="-Os -static" \
             LDFLAGS="-static"
-
           make -j$(nproc)
-          
-          # Strip the binaries to minimize size
           strip src/mkfs.fat src/fsck.fat src/fatlabel
-
-          # Prepare for upload
-          mkdir -p ../dist
           cp src/mkfs.fat src/fsck.fat ../../static-bin/
 
+    ###########################################
+    # F2FS-TOOLS
+    ###########################################
     - name: Clone f2fs-tools
       run: |
           cd build
@@ -182,9 +213,7 @@ jobs:
             --enable-static \
             CFLAGS="-Os -static -ffunction-sections -fdata-sections" \
             LDFLAGS="-static -Wl,--gc-sections -Wl,--as-needed"
-          
           make -j$(nproc)
-
           strip fsck/fsck.f2fs
           cp fsck/fsck.f2fs ../../static-bin/
 
