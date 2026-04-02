@@ -72,7 +72,9 @@ jobs:
     - name: Build dialog (static)
       run: |
         cd build 
-            DIALOG_VERSION=1.3-20251223
+            
+            DIALOG_VERSION=1.3-20260107
+            
             wget https://invisible-mirror.net/archives/dialog/dialog-$DIALOG_VERSION.tgz
             tar xf dialog-$DIALOG_VERSION.tgz
             cd dialog-$DIALOG_VERSION
@@ -113,10 +115,12 @@ jobs:
     - name: Build Coreutils (static cp/mv)
       run: |
         cd build
-        # Using version 9.5 as a stable reference
-        wget https://ftp.gnu.org/gnu/coreutils/coreutils-9.5.tar.xz
-        tar xf coreutils-9.5.tar.xz
-        cd coreutils-9.5
+
+        COREUTILS_VERSION=9.10
+        
+        wget https://ftp.gnu.org/gnu/coreutils/coreutils-$COREUTILS_VERSION.tar.xz
+        tar xf coreutils-$COREUTILS_VERSION.tar.xz
+        cd coreutils-$COREUTILS_VERSION
         
         # FORCE_UNSAFE_CONFIGURE=1 is required to run configure as root
         FORCE_UNSAFE_CONFIGURE=1 \
@@ -157,9 +161,12 @@ jobs:
     - name: Build grep (static)
       run: |
         cd build
-        wget https://ftp.gnu.org/gnu/grep/grep-3.11.tar.xz
-        tar xf grep-*.tar.xz
-        cd grep-*
+        
+        GREP_VERSION=3.12
+        
+        wget https://ftp.gnu.org/gnu/grep/grep-$GREP_VERSION.tar.xz
+        tar xf grep-$GREP_VERSION.tar.xz
+        cd grep-$GREP_VERSION
         CC=musl-gcc \
         ./configure LDFLAGS="-static" --enable-static --disable-shared
         make -j$(nproc)
