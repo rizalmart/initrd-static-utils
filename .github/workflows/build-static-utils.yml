@@ -31,7 +31,7 @@ jobs:
           systemd-dev autopoint libdevmapper-dev libpopt-dev \
           libsepol-dev libjson-c-dev liblvm2-dev bzip2 perl \
           linux-libc-dev libncurses-dev libreadline-dev \
-          uuid-dev libselinux-dev libgcrypt20-dev libaio-dev
+          uuid-dev libselinux-dev libgcrypt20-dev libaio-dev libgcrypt20-dev libasan8
 
     - name: Setup musl header links
       run: |
@@ -240,6 +240,27 @@ jobs:
         cp btrfs ../../static-bin/
         strip ../../static-bin/btrfs || true
 
+    ###########################################
+    # NTFSPLUS-PROGS
+    ###########################################
+    - name: Build ntfsprogs-plus (static)
+      run: |
+        cd build
+        git clone --depth=1 https://github.com/ntfsprogs-plus/ntfsprogs-plus.git
+        cd ntfsprogs-plus
+        ./autogen.sh
+        ./configure \
+            CC=musl-gcc \
+            --host=x86_64-unknown-linux-musl \
+            --enable-static \
+            --disable-shared \
+            CFLAGS="-O2 -pipe -static -fsanitize=address -fno-omit-frame-pointer -g -pg" \
+            LDFLAGS="-static -fsanitize=address -ldl"   
+        make -j$(nproc)
+        mkdir -p /tmp/pkg
+        make DESTDIR=/tmp/pkg install
+        find /tmp/pkg -type f -executable | xargs -i cp -af {} ../../static-bin/
+        
     ###########################################
     # CREATE ARTIFACT TAR
     ###########################################
