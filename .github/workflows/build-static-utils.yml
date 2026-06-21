@@ -252,8 +252,8 @@ jobs:
         ./configure \
             --enable-static \
             --disable-shared \
-            CFLAGS="-Os -ffunction-sections -fdata-sections -fno-unwind-tables -fsanitize=address -fno-omit-frame-pointer -g -pg" \
-            LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed -fsanitize=address -ldl"   
+            CFLAGS="-Os -ffunction-sections -fdata-sections -fno-unwind-tables" \
+            LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed"   
         make -j$(nproc)
         mkdir -p /tmp/pkg
         make DESTDIR=/tmp/pkg install
