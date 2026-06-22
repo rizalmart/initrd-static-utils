@@ -253,12 +253,15 @@ jobs:
             --enable-static \
             --disable-shared \
             CFLAGS="-Os -ffunction-sections -fdata-sections -fno-unwind-tables" \
-            LDFLAGS="-static -s -Wl,--gc-sections -Wl,--as-needed"   
+            LDFLAGS="--static -s -Wl,--gc-sections -Wl,--as-needed"   
         make -j$(nproc)
-        mkdir -p /tmp/pkg
-        make DESTDIR=/tmp/pkg install
-        find /tmp/pkg -type f -executable | xargs -i cp -af {} ../../static-bin/
         
+        for nbin in mkntfs ntfsck ntfsclone ntfscluster ntfsinfo ntfslabel ntfsresize
+        do
+          cp src/$nbin ../../static-bin/
+          strip ../../static-bin/$nbin        
+        done
+                
     ###########################################
     # CREATE ARTIFACT TAR
     ###########################################
