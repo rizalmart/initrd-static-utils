@@ -261,6 +261,42 @@ jobs:
           cp src/$nbin ../../static-bin/
           strip ../../static-bin/$nbin        
         done
+
+    ###########################################
+    # BUSYBOX
+    ###########################################
+    - name: Build BusyBox (static)
+      run: |
+        cd build
+
+        BUSYBOX_VERSION=1.37.0
+
+        wget https://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2
+        tar xf busybox-${BUSYBOX_VERSION}.tar.bz2
+        cd busybox-${BUSYBOX_VERSION}
+
+        # Start from BusyBox's default configuration
+        make defconfig
+
+        # Force static linking and disable unnecessary features
+        sed -i 's/^# CONFIG_STATIC is not set/CONFIG_STATIC=y/' .config
+        sed -i 's/^CONFIG_STATIC_LIBGCC=y/# CONFIG_STATIC_LIBGCC is not set/' .config
+
+        # Ensure static build
+        make olddefconfig
+
+        make -j$(nproc) \
+          CC=musl-gcc \
+          CFLAGS="-Os" \
+          LDFLAGS="-static"
+
+        strip busybox
+
+        # Verify that BusyBox is actually statically linked
+        file busybox
+        ldd busybox || true
+
+        cp busybox ../../static-bin/        
                 
     ###########################################
     # CREATE ARTIFACT TAR
@@ -274,4 +310,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: static-musl-tools
-        path: static-musl-tools.tar
+        path: static-bin
