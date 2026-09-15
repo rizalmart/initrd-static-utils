@@ -262,29 +262,32 @@ jobs:
           strip ../../static-bin/$nbin        
         done
 
-    ###########################################
+        ###########################################
     # BUSYBOX
     ###########################################
     - name: Build BusyBox (static)
       run: |
         cd build
 
-        BUSYBOX_VERSION=1.37.0
+        BUSYBOX_VERSION=1.38.0
 
         wget https://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2
         tar xf busybox-${BUSYBOX_VERSION}.tar.bz2
         cd busybox-${BUSYBOX_VERSION}
 
-        # Start from BusyBox's default configuration
-        make defconfig
+        # Generate the default configuration without interactive prompts
+        yes "" | make defconfig
 
-        # Force static linking and disable unnecessary features
+        # Force static linking
         sed -i 's/^# CONFIG_STATIC is not set/CONFIG_STATIC=y/' .config
+
+        # Do not link against shared libraries
         sed -i 's/^CONFIG_STATIC_LIBGCC=y/# CONFIG_STATIC_LIBGCC is not set/' .config
 
-        # Ensure static build
-        make olddefconfig
+        # Reconfigure without using the unsupported olddefconfig target
+        yes "" | make oldconfig
 
+        # Build BusyBox with musl
         make -j$(nproc) \
           CC=musl-gcc \
           CFLAGS="-Os" \
@@ -292,11 +295,11 @@ jobs:
 
         strip busybox
 
-        # Verify that BusyBox is actually statically linked
+        # Verify the result
         file busybox
         ldd busybox || true
 
-        cp busybox ../../static-bin/        
+        cp busybox ../../static-bin/  
                 
     ###########################################
     # CREATE ARTIFACT TAR
