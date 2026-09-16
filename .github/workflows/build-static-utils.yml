@@ -305,6 +305,15 @@ jobs:
         sed -i 's/^CONFIG_UBIRSVOL=y/# CONFIG_UBIRSVOL is not set/' .config
         sed -i 's/^CONFIG_UBIUPDATEVOL=y/# CONFIG_UBIUPDATEVOL is not set/' .config          
 
+        # Disable MTD/NAND/UBI/UBIFS-related BusyBox options.
+        while read -r option; do
+          sed -i "s/^CONFIG_${option}=y/# CONFIG_${option} is not set/" .config
+        done < <(
+          grep -E '^CONFIG_(NAND|MTD|UBI|UBIFS)' .config |
+          sed -n 's/^CONFIG_\([^=]*\)=y$/\1/p'
+        )
+
+
         # Build BusyBox
         make -j$(nproc) \
           CC=musl-gcc \
