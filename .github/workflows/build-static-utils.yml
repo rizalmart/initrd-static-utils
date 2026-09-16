@@ -293,6 +293,18 @@ jobs:
           's/^CONFIG_STATIC_LIBGCC=y/# CONFIG_STATIC_LIBGCC is not set/' \
           .config
 
+        # MTD/NAND utilities: require mtd/mtd-user.h
+        sed -i 's/^CONFIG_NANDWRITE=y/# CONFIG_NANDWRITE is not set/' .config
+        sed -i 's/^CONFIG_NANDDUMP=y/# CONFIG_NANDDUMP is not set/' .config
+        sed -i 's/^CONFIG_FLASHCP=y/# CONFIG_FLASHCP is not set/' .config
+        sed -i 's/^CONFIG_FLASH_ERASEALL=y/# CONFIG_FLASH_ERASEALL is not set/' .config
+        sed -i 's/^CONFIG_UBIATTACH=y/# CONFIG_UBIATTACH is not set/' .config
+        sed -i 's/^CONFIG_UBIDETACH=y/# CONFIG_UBIDETACH is not set/' .config
+        sed -i 's/^CONFIG_UBIMKVOL=y/# CONFIG_UBIMKVOL is not set/' .config
+        sed -i 's/^CONFIG_UBIRMVOL=y/# CONFIG_UBIRMVOL is not set/' .config
+        sed -i 's/^CONFIG_UBIRSVOL=y/# CONFIG_UBIRSVOL is not set/' .config
+        sed -i 's/^CONFIG_UBIUPDATEVOL=y/# CONFIG_UBIUPDATEVOL is not set/' .config          
+
         # Build BusyBox
         make -j$(nproc) \
           CC=musl-gcc \
