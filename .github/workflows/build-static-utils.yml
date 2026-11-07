@@ -146,7 +146,9 @@ jobs:
         touch doc/*.info        
         
         # FORCE_UNSAFE_CONFIGURE=1 is required to run configure as root
-          /configure \
+        FORCE_UNSAFE_CONFIGURE=1 \
+        CC=musl-gcc \
+        ./configure \
               --host=x86_64-linux-musl \
               --enable-static \
               --disable-nls \
