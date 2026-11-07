@@ -52,9 +52,9 @@ jobs:
       
           curl -fL \
               -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36" \
-              -H "Referer: https://invisible-island.net/datafiles/release/" \
+              -H "Referer: https://mirrors.ibiblio.org/gnu/ncurses/" \
               -o ncurses.tar.gz \
-              "https://invisible-island.net/datafiles/release/ncurses.tar.gz"
+              "https://mirrors.ibiblio.org/gnu/ncurses/ncurses-6.6.tar.gz"
           
           tar xf ncurses.tar.gz
           cd ncurses-*
