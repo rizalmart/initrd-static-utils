@@ -116,18 +116,23 @@ jobs:
         strip progress
         cp progress ../../static-bin/
 
+###########################################
+    # COREUTILS (CP/MV ONLY WITH PROGRESS BAR)
     ###########################################
-    # COREUTILS (CP/MV ONLY)
-    ###########################################
-    - name: Build Coreutils (cp/mv)
+    - name: Build Coreutils (cp/mv) with advcpmv patch
       run: |
         cd build
 
-        COREUTILS_VERSION=9.10
+        COREUTILS_VERSION=9.11
         
+        # Download coreutils source
         wget https://ftp.gnu.org/gnu/coreutils/coreutils-$COREUTILS_VERSION.tar.xz
         tar xf coreutils-$COREUTILS_VERSION.tar.xz
         cd coreutils-$COREUTILS_VERSION
+        
+        # Download and apply the corresponding advcpmv patch
+        wget https://raw.githubusercontent.com/jarun/advcpmv/master/advcpmv-0.9-$COREUTILS_VERSION.patch
+        patch -p1 -i advcpmv-0.9-$COREUTILS_VERSION.patch
         
         # FORCE_UNSAFE_CONFIGURE=1 is required to run configure as root
         FORCE_UNSAFE_CONFIGURE=1 \
@@ -144,10 +149,13 @@ jobs:
         # We only need to build the 'src' directory to get the binaries
         make -j$(nproc)
         
+        # Strip binary sizes
+        strip src/cp
         strip src/mv
+        
+        # Copy to final destination folder
         cp src/cp ../../static-bin/
         cp src/mv ../../static-bin/
-
     ###########################################
     # PV (PIPE VIEWER)
     ###########################################
