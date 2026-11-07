@@ -117,7 +117,7 @@ jobs:
         cp progress ../../static-bin/
 
     ###########################################
-    # COREUTILS (MV ONLY)
+    # COREUTILS (CP/MV ONLY)
     ###########################################
     - name: Build Coreutils (cp/mv)
       run: |
@@ -145,50 +145,30 @@ jobs:
         make -j$(nproc)
         
         strip src/mv
+        cp src/cp ../../static-bin/
         cp src/mv ../../static-bin/
 
     ###########################################
-    # UUTILS CP (STATIC MUSL)
+    # PV (PIPE VIEWER)
     ###########################################
-    - name: Build uutils cp (static)
+    - name: Build pv (static)
       run: |
         cd build
-
-        # Install a minimal stable Rust toolchain.
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
-          | sh -s -- -y --profile minimal
-
-        . "$HOME/.cargo/env"
-
-        # Install the musl target for a fully static Linux executable.
-        rustup target add x86_64-unknown-linux-musl
-
-        # Build only the standalone cp utility.
-        git clone --depth=1 https://github.com/uutils/coreutils.git
-        cd coreutils
-
-        CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=musl-gcc \
-        RUSTFLAGS="-C target-feature=+crt-static -C strip=symbols" \
-        cargo build \
-          --release \
-          --locked \
-          --target x86_64-unknown-linux-musl \
-          --package uu_cp
-
-        # Keep GNU cp and uutils cp side by side.
-        cp target/x86_64-unknown-linux-musl/release/cp ../../static-bin/cp
-        strip ../../static-bin/cp
-
-        # Verify that the executable is statically linked.
-        file ../../static-bin/cp
-        if readelf -l ../../static-bin/cp | grep -q 'INTERP'; then
-          echo "ERROR: uutils cp unexpectedly contains a dynamic interpreter"
-          exit 1
-        fi
-
-        echo "uutils cp is statically linked."
-
-    ###########################################
+        PV_VERSION=1.12.7
+        wget https://www.ivarch.com/s/pv-$PV_VERSION.tar.gz
+        tar xf pv-${PV_VERSION}.tar.gz
+        cd pv-${PV_VERSION}
+        
+        CC=musl-gcc \
+        ./configure \
+          --host=x86_64-linux-musl \
+          --disable-nls \
+          CFLAGS="-Os -static" \
+          LDFLAGS="-static"
+          
+        make -j$(nproc)
+        strip pv
+        cp pv ../../static-bin/
 
     ###########################################
     # EXT2/EXT4 PROGS
