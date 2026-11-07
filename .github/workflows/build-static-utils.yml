@@ -141,17 +141,21 @@ jobs:
         # Download and apply the corresponding advcpmv patch
         wget https://raw.githubusercontent.com/jarun/advcpmv/master/advcpmv-0.9-$COREUTILS_VERSION.patch
         patch -p1 -i advcpmv-0.9-$COREUTILS_VERSION.patch
+
+        # Prevent make from regenerating info/man pages due to touched files
+        touch doc/*.info        
         
         # FORCE_UNSAFE_CONFIGURE=1 is required to run configure as root
-        FORCE_UNSAFE_CONFIGURE=1 \
-        CC=musl-gcc \
-        ./configure \
-          --host=x86_64-linux-musl \
-          --disable-nls \
-          --disable-libcap \
-          --disable-acl \
-          LDFLAGS="-static" \
-          CFLAGS="-Os"
+          /configure \
+              --host=x86_64-linux-musl \
+              --enable-static \
+              --disable-nls \
+              --disable-libcap \
+              --disable-acl \
+              MAKEINFO=: \
+              HELP2MAN=: \
+              LDFLAGS="-static" \
+              CFLAGS="-Os"
           
         # Build using MAKEINFO=true to skip documentation generation failures
         MAKEINFO=true make -j$(nproc)
