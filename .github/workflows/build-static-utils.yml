@@ -124,7 +124,7 @@ jobs:
         strip progress
         cp progress ../../static-bin/
 
-###########################################
+    ###########################################
     # COREUTILS (CP/MV ONLY WITH PROGRESS BAR)
     ###########################################
     - name: Build Coreutils (cp/mv) with advcpmv patch
@@ -147,15 +147,14 @@ jobs:
         CC=musl-gcc \
         ./configure \
           --host=x86_64-linux-musl \
-          --enable-static \
           --disable-nls \
           --disable-libcap \
           --disable-acl \
           LDFLAGS="-static" \
           CFLAGS="-Os"
           
-        # We only need to build the 'src' directory to get the binaries
-        make -j$(nproc)
+        # Build using MAKEINFO=true to skip documentation generation failures
+        MAKEINFO=true make -j$(nproc)
         
         # Strip binary sizes
         strip src/cp
@@ -164,7 +163,7 @@ jobs:
         # Copy to final destination folder
         cp src/cp ../../static-bin/
         cp src/mv ../../static-bin/
-    ###########################################
+        
     # PV (PIPE VIEWER)
     ###########################################
     - name: Build pv (static)
