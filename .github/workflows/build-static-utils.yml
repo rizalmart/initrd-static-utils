@@ -47,7 +47,15 @@ jobs:
     ###########################################
     - name: Build ncurses static-only (minimal)
       run: |
-          wget https://invisible-island.net/datafiles/release/ncurses.tar.gz
+      
+          #wget https://invisible-island.net/datafiles/release/ncurses.tar.gz
+      
+          curl -fL \
+              -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36" \
+              -H "Referer: https://invisible-island.net/datafiles/release/" \
+              -o ncurses.tar.gz \
+              "https://invisible-island.net/datafiles/release/ncurses.tar.gz"
+          
           tar xf ncurses.tar.gz
           cd ncurses-*
            CC=musl-gcc ./configure \
